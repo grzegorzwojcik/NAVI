@@ -16,42 +16,33 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "stm32f10x.h"
-#include "functions.c"
+
+#include "functions.h"
 
 /* Private typedef */
+ USART_InitTypeDef USART_InitStructure;
 /* Private define  */
 /* Private macro */
 /* Private variables */
- USART_InitTypeDef USART_InitStructure;
-
 /* Private function prototypes */
 /* Private functions */
 
-/**
-**===========================================================================
-**
-**  Abstract: main program
-**
-**===========================================================================
-*/
+
 int main(void)
 {
 
-	int i = 0;
 
 	/* TODO - Add your application code here */
-	RCC_ClocksTypeDef ClksFreq;
-	RCC_GetClocksFreq(&ClksFreq);
 
+	SYSTEM_ClockCheck();
 	/* Enter infinite loop only when clock frequencies are OK */
-	if( ClksFreq.SYSCLK_Frequency == 72000000 ){
+	if( GV_SystemStatus == 1 ){
 		while (1)
 		{
 
-			i++;
-
 		}
 	}
+
 	else
 		while(1);
 }

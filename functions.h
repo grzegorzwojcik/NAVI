@@ -8,8 +8,15 @@
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 
-/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
 /* Global variables ----------------------------------------------------------*/
+volatile uint8_t GV_SystemStatus;	// 0 = BAD, 1 = OK
+
+/* Private functions ---------------------------------------------------------*/
+void SYSTEM_ClockCheck(void);
 
 #endif /* FUNCTIONS_H_ */
+
 
