@@ -41,8 +41,19 @@ void SYSTEM_ClockCheck(void){
 		GV_SystemStatus = 0;
 }
 
-/*-- INTERRUPTS --------------------------------------------------------------*/
+/*-- Interrupts --------------------------------------------------------------*/
 
+/**
+  * @brief  This function handles SysTick Handler.
+  * @param  None
+  * @retval None
+  */
+void SysTick_Handler(void)
+{
+	GV_SystemCounter++;
+	if( GV_SystemCounter >= 1000 )
+		GV_SystemCounter = 0;
+}
 
 
 

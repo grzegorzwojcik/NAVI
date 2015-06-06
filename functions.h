@@ -13,6 +13,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* Global variables ----------------------------------------------------------*/
 volatile uint8_t GV_SystemStatus;	// 0 = BAD, 1 = OK
+volatile uint16_t GV_SystemCounter;	// counter incremented inside Systick
 
 /* Private functions ---------------------------------------------------------*/
 void SYSTEM_ClockCheck(void);
