@@ -35,7 +35,7 @@
 **===========================================================================
 */
 int main(void)
-	{
+{
 
 	int i = 0;
 
@@ -43,11 +43,17 @@ int main(void)
 	RCC_ClocksTypeDef ClksFreq;
 	RCC_GetClocksFreq(&ClksFreq);
 
-	/* Infinite loop */
-	while (1)
-	{
-		i++;
+	/* Enter infinite loop only when clock frequencies are OK */
+	if( ClksFreq.SYSCLK_Frequency == 72000000 ){
+		while (1)
+		{
+
+			i++;
+
+		}
 	}
+	else
+		while(1);
 }
 
 
