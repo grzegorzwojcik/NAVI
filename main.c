@@ -33,8 +33,9 @@ int main(void)
 
 
 	/* TODO - Add your application code here */
-
 	SYSTEM_ClockCheck();
+	SysTick_Config(SystemCoreClock/1000);
+
 	/* Enter infinite loop only when clock frequencies are OK */
 	if( GV_SystemStatus == 1 ){
 		while (1)
