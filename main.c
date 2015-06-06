@@ -44,23 +44,53 @@ int main(void)
 	if( GV_SystemStatus == 1 ){
 	FAULTS_Servo_initGPIO();
 	FAULTS_Servo_initTIM();
-	TIM2->CCR3 = 1500;
 
 
-	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOC, ENABLE );
+
 	GPIO_InitTypeDef GPIO_InitStruct;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_7;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOC, &GPIO_InitStruct);
 	GPIO_PinRemapConfig(GPIO_FullRemap_TIM3, ENABLE);
+	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOC, ENABLE );
+	RCC_APB2PeriphClockCmd( RCC_APB2Periph_AFIO, ENABLE );
 
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef 		TIM_OCInitStructure;
+	TIM_TimeBaseStructure.TIM_Prescaler = 720 - 1;
+	TIM_TimeBaseStructure.TIM_Period = 2000 - 1;
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseStructure.TIM_CounterMode - TIM_CounterMode_Up;
+	//TIM_TimeBaseStructure.TIM_RepetitionCounter
+	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
 
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OCInitStructure.TIM_Pulse = 1500;
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+	TIM_OC2Init(TIM3, &TIM_OCInitStructure);
+	TIM_OC2PreloadConfig(TIM3, TIM_OCPreload_Enable);
 
+	TIM_ARRPreloadConfig(TIM3, ENABLE);
+	TIM_Cmd(TIM3, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+
+	TIM2->CCR3 = 1500;
+	TIM3->CCR2 = 1500;
 
 		while (1)
 		{
+			if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_7) != 0 ){
+				//GV_SystemCounter++;
+			}
 
+			if( GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10) != 0 ){
+				static uint16_t chuj = 0;
+				chuj ++;
+				if( GV_SystemCounter >= 1000 )
+					chuj = 0;
+			}
 		}
 	}
 

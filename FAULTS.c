@@ -14,16 +14,17 @@
 
 void FAULTS_Servo_initGPIO(){
 
-	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB, ENABLE );
+
 
 	GPIO_InitTypeDef GPIO_InitStruct;
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStruct);
+	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB, ENABLE );
 
-	//GPIO_PinRemapConfig(GPIO_PartialRemap2_TIM2, ENABLE);
-	GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
+	GPIO_PinRemapConfig(GPIO_PartialRemap2_TIM2, ENABLE);
+	//GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
 }
 
 void FAULTS_Servo_initTIM(){
@@ -42,7 +43,7 @@ void FAULTS_Servo_initTIM(){
 	/* SETTING UP 3rd CHANNEL OF TIM2 */
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-	TIM_OCInitStructure.TIM_Pulse = 1000;							/* Po ilu zliczonych taktach ma zostac zgloszone zdarzenie? */
+	TIM_OCInitStructure.TIM_Pulse = 1999;							/* Po ilu zliczonych taktach ma zostac zgloszone zdarzenie? */
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OC3Init(TIM2, &TIM_OCInitStructure);				/* Inicjalizacja kana³u OCx  */
 	TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Enable);	/* W³¹czenie buforowania dla OC3 */
