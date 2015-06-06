@@ -38,6 +38,7 @@ int main(void)
 
 	/* Enter infinite loop only when clock frequencies are OK */
 	if( GV_SystemStatus == 1 ){
+
 		while (1)
 		{
 
