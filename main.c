@@ -16,6 +16,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include "stm32f10x.h"
+#include "functions.c"
 
 /* Private typedef */
 /* Private define  */
