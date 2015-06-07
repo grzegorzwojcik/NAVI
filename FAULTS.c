@@ -12,6 +12,11 @@
 
 #include "FAULTS.h"
 
+void FAULTS_initRCC(void){
+	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);	// Servomechanism
+	  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);							// Servomechanism
+}
+
 void FAULTS_Servo_initGPIO(void){
 
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -21,12 +26,11 @@ void FAULTS_Servo_initGPIO(void){
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	GPIO_SetBits(GPIOB, GPIO_Pin_10);
 
-	GPIO_PinRemapConfig(GPIO_PartialRemap2_TIM2, ENABLE);
-	//GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
+	//GPIO_PinRemapConfig(GPIO_PartialRemap2_TIM2, ENABLE);
+	GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
 }
 
 void FAULTS_Servo_initTIM(void){
-
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
 
@@ -44,5 +48,4 @@ void FAULTS_Servo_initTIM(void){
 	TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Enable);
 	TIM_ARRPreloadConfig(TIM2, ENABLE);
 	TIM_Cmd(TIM2, ENABLE);
-
 }
