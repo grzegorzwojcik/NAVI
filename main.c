@@ -18,6 +18,7 @@
 #include "stm32f10x.h"
 
 #include "functions.h"
+#include "BTM.h"
 #include "FAULTS.h"
 
 /* Private typedef */
@@ -34,6 +35,10 @@ int main(void)
 	PLL_Configurattion();
 	SYSTEM_ClockCheck();
 
+	BTM_initRCC();
+	BTM_initGPIO();
+	BTM_initUART();
+
 
 	/* Enter infinite loop only when clock frequencies are OK */
 	if( GV_SystemStatus == 1 ){
@@ -44,6 +49,15 @@ int main(void)
 
 		while (1)
 		{
+			if( GV_SystemCounter == 1000 ){
+				FAULTS_injectSERVO();
+				//while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+				//USART_SendData(USART1, 'G');
+				//USART_puts(USART1, "chuj");
+			}
+			if( GV_SystemCounter == 0 ){
+				FAULTS_removalSERVO();
+			}
 
 		}
 

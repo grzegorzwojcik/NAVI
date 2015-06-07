@@ -69,7 +69,7 @@ void SYSTEM_ClockCheck(void){
 void SysTick_Handler(void)
 {
 	GV_SystemCounter++;
-	if( GV_SystemCounter >= 1000 )
+	if( GV_SystemCounter >= 2000 )
 		GV_SystemCounter = 0;
 }
 

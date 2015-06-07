@@ -2,7 +2,7 @@
  * BTM.c
  *
  *  Created on: Jun 7, 2015
- *      Author: Grzegorz
+ *      Author: Grzegorz WÓJCIK
  */
 
 
@@ -29,9 +29,13 @@ void BTM_initGPIO(void){
 	 * TX: PA9
 	 * RX: PA10 */
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = BTM_USART1_TX | BTM_USART1_RX;
+	GPIO_InitStructure.GPIO_Pin = BTM_USART1_TX;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(BTM_PORT, &GPIO_InitStructure);
+
+	GPIO_InitStructure.GPIO_Pin = BTM_USART1_RX;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_Init(BTM_PORT, &GPIO_InitStructure);
 }
 
@@ -44,8 +48,8 @@ void BTM_initUART(void){
 	USART_InitStructure.USART_Parity = USART_Parity_No;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_Init(USART1, &USART_InitStruct);
-	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); 			// Enable the USART2 receive and transmit interrupt
+	USART_Init(USART1, &USART_InitStructure);
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); 			// Enable the USART1 receive and transmit interrupt
 
 	NVIC_InitTypeDef NVIC_InitStruct;
 	NVIC_InitStruct.NVIC_IRQChannel = USART1_IRQn;
@@ -53,5 +57,43 @@ void BTM_initUART(void){
 	NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 2;
 	NVIC_InitStruct.NVIC_IRQChannelSubPriority = 2;
 	NVIC_Init(&NVIC_InitStruct);
-	USART_Cmd(USART2, ENABLE);
+
+	//USART_ClearFlag(USART1, USART_FLAG_RXNE);
+	//USART_ClearFlag(USART1, USART_FLAG_TXE);
+	USART_Cmd(USART1, ENABLE);
+}
+
+void BTM_ClearBuffor(){
+	uint8_t tmp;
+	for (tmp = 0; tmp < BTM_BUFFOR_LENGTH; tmp++){
+		GV_bufforBTM[tmp] = 0;
+	}
+}
+
+void USART_puts(USART_TypeDef* USARTx, volatile char *s){
+
+	while(*s){
+		// wait until data register is empty
+		while( !(USARTx->SR & 0x00000040) );
+		USART_SendData(USARTx, *s);
+		*s++;
+	}
+}
+
+void USART1_IRQHandler(void){
+
+	if( USART_GetITStatus(USART1, USART_IT_RXNE) ){
+
+		static uint8_t cnt = 0; 	// String length
+		char t = USART1->DR; 		// Received character from USART1 data register is saved in t
+
+		GV_bufforBTM[cnt] = t;
+		cnt++;
+		if( (t == '\n') || ( cnt >= 4 ) )
+			cnt = 0;
+	}
+
+	if( USART_GetITStatus(USART1, USART_IT_TXE) ){
+		static uint8_t cnt = 0; 	// String length
+	}
 }
