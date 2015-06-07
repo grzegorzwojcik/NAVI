@@ -20,4 +20,10 @@ void FAULTS_initRCC(void);
 void FAULTS_Servo_initGPIO(void);
 void FAULTS_Servo_initTIM(void);
 
+/* faults injection  */
+void FAULTS_injectSERVO(void);
+
+/* faults removal */
+void FAULTS_removalSERVO(void);
+
 #endif /* FAULTS_H_ */

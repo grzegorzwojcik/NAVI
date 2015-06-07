@@ -49,3 +49,12 @@ void FAULTS_Servo_initTIM(void){
 	TIM_ARRPreloadConfig(TIM2, ENABLE);
 	TIM_Cmd(TIM2, ENABLE);
 }
+
+void FAULTS_injectSERVO(void){
+	TIM2->CCR3 = 250;
+}
+
+void FAULTS_removalSERVO(void){
+	TIM2->CCR3 = 60;
+}
+
