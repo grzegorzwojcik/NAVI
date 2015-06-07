@@ -20,11 +20,11 @@ void FAULTS_initRCC(void){
 void FAULTS_Servo_initGPIO(void){
 
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Pin = SERVO_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	GPIO_SetBits(GPIOB, GPIO_Pin_10);
+	GPIO_Init(SERVO_GPIO_PORT, &GPIO_InitStructure);
+	GPIO_SetBits(SERVO_GPIO_PORT, SERVO_PIN);
 
 	//GPIO_PinRemapConfig(GPIO_PartialRemap2_TIM2, ENABLE);
 	GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
