@@ -16,8 +16,8 @@
 #define SERVO_RCC_APB1Periph	RCC_APB1Periph_TIM2
 #define SERVO_TIMER				TIM2			/*	Timer with PWM	*/
 
-
-void FAULTS_Servo_initGPIO();
-void FAULTS_Servo_initTIM();
+void FAULTS_initRCC(void);
+void FAULTS_Servo_initGPIO(void);
+void FAULTS_Servo_initTIM(void);
 
 #endif /* FAULTS_H_ */
