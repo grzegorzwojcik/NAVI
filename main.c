@@ -35,9 +35,14 @@ int main(void)
 	PLL_Configurattion();
 	SYSTEM_ClockCheck();
 
+	NVIC_SetPriorityGrouping(NVIC_PriorityGroup_2);
+	NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(2,2,0));
+	NVIC_SetPriority(USART1_IRQn, NVIC_EncodePriority(2,1,2));
+
 	BTM_initRCC();
 	BTM_initGPIO();
 	BTM_initUART();
+	BTM_ClearBuffor();
 
 
 	/* Enter infinite loop only when clock frequencies are OK */
@@ -57,6 +62,11 @@ int main(void)
 			}
 			if( GV_SystemCounter == 0 ){
 				FAULTS_removalSERVO();
+			}
+
+			if(GV_flag_BTM == 1 ){
+				BTM_ClearBuffor();
+				GV_flag_BTM = 0;
 			}
 
 		}

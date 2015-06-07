@@ -44,7 +44,7 @@ void BTM_initUART(void){
 	USART_InitTypeDef USART_InitStructure;
 	USART_InitStructure.USART_BaudRate = 19200;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+	USART_InitStructure.USART_Mode = USART_Mode_Rx;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
@@ -61,10 +61,11 @@ void BTM_initUART(void){
 	//USART_ClearFlag(USART1, USART_FLAG_RXNE);
 	//USART_ClearFlag(USART1, USART_FLAG_TXE);
 	USART_Cmd(USART1, ENABLE);
+	GV_flag_BTM = 0;
 }
 
 void BTM_ClearBuffor(){
-	uint8_t tmp;
+	uint8_t tmp = 0;
 	for (tmp = 0; tmp < BTM_BUFFOR_LENGTH; tmp++){
 		GV_bufforBTM[tmp] = 0;
 	}
@@ -82,18 +83,21 @@ void USART_puts(USART_TypeDef* USARTx, volatile char *s){
 
 void USART1_IRQHandler(void){
 
-	if( USART_GetITStatus(USART1, USART_IT_RXNE) ){
+	uint32_t status = USART1->SR;
 
-		static uint8_t cnt = 0; 	// String length
-		char t = USART1->DR; 		// Received character from USART1 data register is saved in t
+	if( USART_GetFlagStatus(USART1, USART_FLAG_RXNE ) != RESET ){
+		static uint8_t cnt = 0;
+		char t = USART1->DR; 		// Received character from USART1 data register is saved in
 
-		GV_bufforBTM[cnt] = t;
-		cnt++;
-		if( (t == '\n') || ( cnt >= 4 ) )
-			cnt = 0;
-	}
-
-	if( USART_GetITStatus(USART1, USART_IT_TXE) ){
-		static uint8_t cnt = 0; 	// String length
+		if( GV_flag_BTM == 0 ){
+			status = USART1->SR;
+			GV_bufforBTM[cnt] = t;
+			cnt++;
+			if( (t == '\n') || ( cnt >= 4 ) ){
+				GV_flag_BTM = 1;
+				USART_ClearFlag(USART1, USART_FLAG_ORE | USART_FLAG_PE | USART_FLAG_NE | USART_FLAG_FE | USART_FLAG_TXE);
+				cnt = 0;
+			}
+		}
 	}
 }
