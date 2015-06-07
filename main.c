@@ -31,6 +31,7 @@
 int main(void)
 {
 	/* TODO - Add your application code here */
+	PLL_Configurattion();
 	SYSTEM_ClockCheck();
 
 

@@ -16,6 +16,7 @@ volatile uint8_t GV_SystemStatus;	// 0 = BAD, 1 = OK
 volatile uint16_t GV_SystemCounter;	// counter incremented inside Systick
 
 /* Private functions ---------------------------------------------------------*/
+void PLL_Configurattion(void);
 void SYSTEM_ClockCheck(void);
 
 #endif /* FUNCTIONS_H_ */

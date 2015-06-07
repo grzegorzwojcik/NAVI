@@ -26,6 +26,24 @@
 
 
 /* Private functions ---------------------------------------------------------*/
+void PLL_Configurattion(void){
+	RCC_PLLConfig(RCC_PLLSource_HSE_Div1,RCC_PLLMul_9); // 72MHz
+	RCC_PLLCmd(ENABLE);
+
+	/* Wait till PLL is ready */
+	while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET){
+	}
+
+	/* Select PLL as system clock source */
+	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+
+	/* Wait till PLL is used as system clock source */
+	while (RCC_GetSYSCLKSource() != 0x08){
+	}
+
+	SystemCoreClockUpdate();
+}
+
 void SYSTEM_ClockCheck(void){
 
 	GV_SystemStatus = 0;
