@@ -30,7 +30,7 @@ void CTRL_initNaviStruct(void){
 	NAVI_Struct.FaultE = 0;
 	NAVI_Struct.FaultM = 0;
 	NAVI_Struct.FaultC = 0;
-	NAVI_Struct.FaultTime = 10000;
+	NAVI_Struct.FaultTime = 0;
 }
 
 
