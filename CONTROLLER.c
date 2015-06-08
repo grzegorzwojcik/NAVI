@@ -37,7 +37,7 @@ void CTRL_initNaviStruct(void){
 
 void CTRL_DataProcess(void){
 	/* Sample frame:
-	 	 #YPR=-4.25,0.36,-3.73\r\n
+	 	 %,1,44,33,22,11,*CRC,0x0A0x0D
 	 */
 	static uint8_t CommaCounter;
 	static uint8_t i;
