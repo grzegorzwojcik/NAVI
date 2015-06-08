@@ -90,13 +90,23 @@ void USART1_IRQHandler(void){
 		char t = USART1->DR; 		// Received character from USART1 data register is saved in
 
 		if( GV_flag_BTMRX == 0 ){
-			GV_bufforBTM[cnt] = t;
-			cnt++;
-			if( (t == '\n') || ( cnt >= 30 ) ){
-				GV_flag_BTMRX = 1;
-				USART_ClearFlag(USART1, USART_FLAG_ORE | USART_FLAG_PE | USART_FLAG_NE | USART_FLAG_FE | USART_FLAG_TXE);
+			if( t == '%' ){
 				cnt = 0;
+				GV_bufforBTM[cnt] = t;
+				cnt++;
+			}
+			if( (t != '%') && (GV_bufforBTM[0] == '%') ){
+				GV_bufforBTM[cnt] = t;
+				cnt++;
+
+				if( (t == '\n') || ( cnt >= BTM_BUFFOR_LENGTH-1 ) ){
+					cnt = 0;
+					GV_flag_BTMRX = 1;
+					USART_ClearFlag(USART1, USART_FLAG_ORE | USART_FLAG_PE | USART_FLAG_NE | USART_FLAG_FE | USART_FLAG_TXE);
+				}
 			}
 		}
 	}
 }
+
+
