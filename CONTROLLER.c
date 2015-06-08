@@ -34,6 +34,7 @@ void CTRL_initNaviStruct(void){
 }
 
 
+
 void CTRL_DataProcess(void){
 	/* Sample frame:
 	 	 #YPR=-4.25,0.36,-3.73\r\n
@@ -47,11 +48,11 @@ void CTRL_DataProcess(void){
 	static uint8_t n;	//DATA4 index counter
 
 	static char StartProcessingFlag = 0;	// Flag, set to 1 when '=' is detected
-	static char FRAME[2]			= {0};	// Temporary char array
-	static char DATA1[3]			= {0};	// Temporary char array
-	static char DATA2[3]			= {0};	// Temporary char array
-	static char DATA3[3]			= {0};	// Temporary char array
-	static char DATA4[3]			= {0};	// Temporary char array
+	char FRAME[2]			= {0};	// Temporary char array
+	char DATA1[3]			= {0};	// Temporary char array
+	char DATA2[3]			= {0};	// Temporary char array
+	char DATA3[3]			= {0};	// Temporary char array
+	char DATA4[3]			= {0};	// Temporary char array
 
 
 	for( i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, CommaCounter = 0, StartProcessingFlag = 0; i < BTM_BUFFOR_LENGTH ; i++ ){
@@ -64,7 +65,7 @@ void CTRL_DataProcess(void){
 				CommaCounter++;
 
 			/* Parse FRAME byte */
-			if( (CommaCounter < 2) && (GV_bufforBTM[i] != ',') ){
+			if( (CommaCounter == 1) && (GV_bufforBTM[i] != ',') ){
 				FRAME[j] = GV_bufforBTM[i];
 				j++;
 			}
@@ -80,17 +81,17 @@ void CTRL_DataProcess(void){
 			}
 			/* Parse DATA3 bytes */
 			else if( CommaCounter == 4 && (GV_bufforBTM[i] != ',') ){
-				DATA3[l] = GV_bufforBTM[i];
+				DATA3[m] = GV_bufforBTM[i];
 				m++;
 			}
 			/* Parse DATA4 bytes */
 			else if( CommaCounter == 5 && (GV_bufforBTM[i] != ',') ){
-				DATA4[l] = GV_bufforBTM[i];
+				DATA4[n] = GV_bufforBTM[i];
 				n++;
 			}
 		}
 
-		if( CommaCounter == 1)	//set flag to 1 when first ',' is detected
+		if( GV_bufforBTM[i] == '%')	//set flag to 1 when first ',' is detected
 			StartProcessingFlag = 1;
 	}
 }
