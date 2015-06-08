@@ -94,4 +94,22 @@ void CTRL_DataProcess(void){
 		if( GV_bufforBTM[i] == '%')	//set flag to 1 when first ',' is detected
 			StartProcessingFlag = 1;
 	}
+
+	static uint8_t tmp = 0;
+	tmp = atoi(FRAME);
+	switch (tmp){
+		case 1:
+			NAVI_Struct.NAVI_CH1 = atoi(DATA1);
+			NAVI_Struct.NAVI_CH2 = atoi(DATA2);
+			NAVI_Struct.NAVI_CH3 = atoi(DATA3);
+			NAVI_Struct.NAVI_CH4 = atoi(DATA4);
+			break;
+		case 2:
+			NAVI_Struct.FaultE = atoi(DATA1);
+			NAVI_Struct.FaultM = atoi(DATA2);
+			NAVI_Struct.FaultC = atoi(DATA3);
+			NAVI_Struct.FaultTime = atoi(DATA4);
+		default:
+			break;
+	}
 }
