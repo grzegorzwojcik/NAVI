@@ -19,6 +19,7 @@
 
 #include "functions.h"
 #include "BTM.h"
+#include "CONTROLLER.h"
 #include "FAULTS.h"
 
 /* Private typedef */
@@ -38,6 +39,7 @@ int main(void)
 	NVIC_SetPriorityGrouping(NVIC_PriorityGroup_2);
 	NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(2,2,0));
 	NVIC_SetPriority(USART1_IRQn, NVIC_EncodePriority(2,1,2));
+
 
 	BTM_initRCC();
 	BTM_initGPIO();
