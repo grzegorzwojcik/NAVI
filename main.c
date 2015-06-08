@@ -57,6 +57,7 @@ int main(void)
 		while (1)
 		{
 			if(GV_flag_BTMRX == 1 ){
+				CTRL_DataProcess();
 				BTM_ClearBuffor();
 				GV_flag_BTMRX = 0;
 			}
