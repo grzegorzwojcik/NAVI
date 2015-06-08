@@ -85,14 +85,11 @@ void USART_puts(USART_TypeDef* USARTx, volatile char *s){
 
 void USART1_IRQHandler(void){
 
-	uint32_t status = USART1->SR;
-
 	if( USART_GetFlagStatus(USART1, USART_FLAG_RXNE ) != RESET ){
 		static uint8_t cnt = 0;
 		char t = USART1->DR; 		// Received character from USART1 data register is saved in
 
 		if( GV_flag_BTMRX == 0 ){
-			status = USART1->SR;
 			GV_bufforBTM[cnt] = t;
 			cnt++;
 			if( (t == '\n') || ( cnt >= 30 ) ){

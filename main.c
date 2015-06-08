@@ -54,16 +54,6 @@ int main(void)
 
 		while (1)
 		{
-			if( GV_SystemCounter == 1000 ){
-				FAULTS_injectSERVO();
-				//while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
-				//USART_SendData(USART1, 'G');
-				//USART_puts(USART1, "chuj");
-			}
-			if( GV_SystemCounter == 0 ){
-				FAULTS_removalSERVO();
-			}
-
 			if(GV_flag_BTMRX == 1 ){
 				BTM_ClearBuffor();
 				GV_flag_BTMRX = 0;
