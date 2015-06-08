@@ -19,7 +19,8 @@
 /* Private variables ---------------------------------------------------------*/
 /* Global variables ----------------------------------------------------------*/
 volatile unsigned char GV_bufforBTM[BTM_BUFFOR_LENGTH];
-volatile unsigned char GV_flag_BTM;
+volatile unsigned char GV_flag_BTMRX;
+volatile unsigned char GV_flag_BTMTX;
 
 /* Private functions ---------------------------------------------------------*/
 void BTM_initRCC(void);

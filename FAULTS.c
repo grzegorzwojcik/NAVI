@@ -25,7 +25,6 @@ void FAULTS_Servo_initGPIO(void){
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(SERVO_GPIO_PORT, &GPIO_InitStructure);
 
-	//GPIO_PinRemapConfig(GPIO_PartialRemap2_TIM2, ENABLE);
 	GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
 }
 

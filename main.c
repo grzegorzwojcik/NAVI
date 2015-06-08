@@ -43,7 +43,7 @@ int main(void)
 	BTM_initGPIO();
 	BTM_initUART();
 	BTM_ClearBuffor();
-
+	USART_puts(USART1, "Init complete! Hello World!\r\n"); // just send a message to indicate that it works
 
 	/* Enter infinite loop only when clock frequencies are OK */
 	if( GV_SystemStatus == 1 ){
@@ -56,22 +56,26 @@ int main(void)
 		{
 			if( GV_SystemCounter == 1000 ){
 				FAULTS_injectSERVO();
-				//while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+				//if(GV_flag_BTMTX == 1 ){
+					//while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+					//USART_puts(USART1, "chuj");
+					GV_flag_BTMTX = 0;
+				//}
 				//USART_SendData(USART1, 'G');
-				//USART_puts(USART1, "chuj");
+				//
 			}
 			if( GV_SystemCounter == 0 ){
 				FAULTS_removalSERVO();
 			}
 
-			if(GV_flag_BTM == 1 ){
+			if(GV_flag_BTMRX == 1 ){
 				BTM_ClearBuffor();
-				GV_flag_BTM = 0;
+				GV_flag_BTMRX = 0;
 			}
 
+
+
 		}
-
-
 	}
 	else
 		while(1);
