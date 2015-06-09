@@ -35,7 +35,7 @@ typedef struct{
 volatile NAVI NAVI_Struct;
 /* Private functions ---------------------------------------------------------*/
 void CTRL_initNaviStruct(void);
-
+void CTRL_initTIM(void);		// This functions MUST be executed after FAULTS_Servo_initTIM() @Faults.h
 void CTRL_DataProcess(void);
 
 #endif /* CONTROLLER_H_ */

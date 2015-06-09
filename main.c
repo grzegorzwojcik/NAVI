@@ -46,12 +46,12 @@ int main(void)
 	BTM_initUART();
 	BTM_ClearBuffor();
 
-
 	/* Enter infinite loop only when clock frequencies are OK */
 	if( GV_SystemStatus == 1 ){
 		FAULTS_initRCC();
 		FAULTS_Servo_initGPIO();
-		FAULTS_Servo_initTIM();
+		FAULTS_Servo_initTIM();		// 50 Hz PWM (together with control loop below
+		CTRL_initTIM();				// 50 Hz control loop
 		SysTick_Config(SystemCoreClock/1000);	// SysTick 1 kHZ (1ms interval)
 
 		while (1)
@@ -62,9 +62,7 @@ int main(void)
 				BTM_ClearBuffor();
 				GV_flag_BTMRX = 0;
 			}
-
 		}
-
 	}
 	else
 		while(1);

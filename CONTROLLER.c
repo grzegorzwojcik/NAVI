@@ -34,6 +34,21 @@ void CTRL_initNaviStruct(void){
 
 }
 
+/* This functions MUST be executed after FAULTS_Servo_initTIM() @Faults.h */
+/* 50 Hz control loop */
+void CTRL_initTIM(void){
+
+	/* Enable the TIM2 Update interrupt */
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
+	TIM_ClearITPendingBit( TIM2, TIM_IT_Update );
+	TIM_ITConfig( TIM2, TIM_IT_Update, ENABLE );
+}
 
 
 void CTRL_DataProcess(void){
@@ -56,7 +71,8 @@ void CTRL_DataProcess(void){
 	char DATA4[3]			= {0};	// Temporary char array
 
 
-	for( i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, CommaCounter = 0, StartProcessingFlag = 0; i < BTM_BUFFOR_LENGTH ; i++ ){
+	for( i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, CommaCounter = 0,
+			StartProcessingFlag = 0; i < BTM_BUFFOR_LENGTH ; i++ ){
 		if( StartProcessingFlag == 1 ){
 
 			if( GV_bufforBTM[i] == '\r')
@@ -99,13 +115,13 @@ void CTRL_DataProcess(void){
 	static uint8_t tmp = 0;
 	tmp = atoi(FRAME);
 	switch (tmp){
-		case 1:
+		case 1:				// Data frame is related to the QUADRO CONTROL
 			NAVI_Struct.NAVI_CH1 = atoi(DATA1);
 			NAVI_Struct.NAVI_CH2 = atoi(DATA2);
 			NAVI_Struct.NAVI_CH3 = atoi(DATA3);
 			NAVI_Struct.NAVI_CH4 = atoi(DATA4);
 			break;
-		case 2:
+		case 2:				// Data frame is related to the FAULT INJECTION AND REMOVAL
 			NAVI_Struct.FaultE = atoi(DATA1);
 			NAVI_Struct.FaultM = atoi(DATA2);
 			NAVI_Struct.FaultC = atoi(DATA3);
@@ -114,3 +130,5 @@ void CTRL_DataProcess(void){
 			break;
 	}
 }
+
+

@@ -146,7 +146,6 @@ uint8_t BTM_checkCRC(char StartChar, uint8_t Length){
 	return status;
 }
 
-
 void USART1_IRQHandler(void){
 
 	if( USART_GetFlagStatus(USART1, USART_FLAG_RXNE ) != RESET ){

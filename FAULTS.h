@@ -12,7 +12,6 @@
 #define SERVO_GPIO_PORT 		GPIOB
 #define SERVO_PIN				GPIO_Pin_10
 
-
 void FAULTS_initRCC(void);
 void FAULTS_Servo_initGPIO(void);
 void FAULTS_Servo_initTIM(void);

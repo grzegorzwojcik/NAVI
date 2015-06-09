@@ -12,6 +12,7 @@
 
 #include "FAULTS.h"
 
+
 void FAULTS_initRCC(void){
 	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);	// Servomechanism
 	  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);							// Servomechanism
@@ -33,8 +34,8 @@ void FAULTS_Servo_initTIM(void){
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
 
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseStructure.TIM_Prescaler = 720-1;
-	TIM_TimeBaseStructure.TIM_Period = 2000-1;
+	TIM_TimeBaseStructure.TIM_Prescaler = 720-1;		// 72MHz / 720 = 100kHz
+	TIM_TimeBaseStructure.TIM_Period = 2000-1;			// 100kHz / 2000 = 50Hz
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
 
@@ -45,8 +46,11 @@ void FAULTS_Servo_initTIM(void){
 	TIM_OC3Init(TIM2, &TIM_OCInitStructure);
 	TIM_OC3PreloadConfig(TIM2, TIM_OCPreload_Enable);
 	TIM_ARRPreloadConfig(TIM2, ENABLE);
+
 	TIM_Cmd(TIM2, ENABLE);
 }
+
+
 
 void FAULTS_injectSERVO(void){
 	TIM2->CCR3 = 250;
@@ -55,4 +59,3 @@ void FAULTS_injectSERVO(void){
 void FAULTS_removalSERVO(void){
 	TIM2->CCR3 = 60;
 }
-

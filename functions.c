@@ -18,6 +18,8 @@
 #include "stm32f10x.h"
 
 #include "functions.h"
+#include "CONTROLLER.h"
+#include "FAULTS.h"
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -69,10 +71,21 @@ void SYSTEM_ClockCheck(void){
 void SysTick_Handler(void)
 {
 	GV_SystemCounter++;
-	if( GV_SystemCounter >= 2000 )
+	if( GV_SystemCounter >= 2000 ){
 		GV_SystemCounter = 0;
+	}
 }
 
+void TIM2_IRQHandler(void){
+	if( TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET ){
+		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+
+		if(NAVI_Struct.FaultM == 1)
+			FAULTS_injectSERVO();
+		if(NAVI_Struct.FaultM == 0)
+			FAULTS_removalSERVO();
+	}
+}
 
 
 
