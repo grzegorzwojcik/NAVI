@@ -118,55 +118,32 @@ uint8_t BTM_calculateCRC(char StartChar, uint8_t Length){
 *
 * @INFO						: this function uses global variable GV_bufforBTM[]
 */
-/*
-uint8_t BTM_checkCRC(uint8_t GeneratedChecksum, uint8_t Length){
-	char checksum[5] = {0};
-	static uint8_t i,j = 0;
-	static uint8_t tmp = 0;	// zmienna pomocnicza
-	static uint8_t status = 0;	// 0 - CRCs do not match, 1 - CRCs match
-
-	for( i = 0, j = 0, tmp = 0, status = 0; i < Length; i++){
-		if( tmp == 1 ){
-			checksum[j] = GV_bufforBTM[i];
-			j++;
-		}
-		if( GV_bufforBTM[i] == '*' ){
-			tmp = 1;
-		}
-		if( tmp == 1 && GV_bufforBTM[i] == ',')
-			break;
-	}
-	if(atoi(checksum) == GeneratedChecksum )
-		status = 1;
-	else
-		status = 0;
-
-	return status;
-}*/
 
 uint8_t BTM_checkCRC(char StartChar, uint8_t Length){
 	static uint8_t XOR = 0;					// calculated checksum
 	static uint8_t i = 0, j = 0, tmp = 0;
 	char checksum[4] = {0};					// received checksum
+	static uint8_t status = 0;				// 0 - CRCs do not match, 1 - CRCs match
 
-	for( XOR = 0, i = 0, j = 0, tmp = 0; i < Length; i++ ){
+	for( XOR = 0, i = 0, j = 0, tmp = 0, status = 0; i < Length; i++ ){
 		if( tmp == 1 ){
 			checksum[j] = GV_bufforBTM[i];
 			j++;
+			if( j >= 3 )
+				break;
 		}
 		if(GV_bufforBTM[i] == '*')
 			tmp = 1;
 		if( (GV_bufforBTM[i] != StartChar) && (tmp != 1) )		// XOR is calculated for chars from StartChar up to '*'
 			XOR ^= GV_bufforBTM[i];
-		if( (tmp == 1) && (GV_bufforBTM[i] == ',') )			// break loop when CRC is succesfully stored
-			break;
 	}
 
 	/* 0 - CRCs do not match, 1 - CRCs match */
 	if(atoi(checksum) == XOR )
-		return 1;
+		status = 1;
 	else
-		return 0;
+		status = 0;
+	return status;
 }
 
 

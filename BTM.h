@@ -28,8 +28,6 @@ void BTM_initGPIO(void);
 void BTM_initUART(void);
 void BTM_ClearBuffor(void);
 void USART_puts(USART_TypeDef* USARTx, volatile char *s);
-uint8_t BTM_calculateCRC(char StartChar ,uint8_t Length);
-//uint8_t BTM_checkCRC(uint8_t GeneratedChecksum, uint8_t Length);
 uint8_t BTM_checkCRC(char StartChar, uint8_t Length);
 
 #endif /* BTM_H_ */

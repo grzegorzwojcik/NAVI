@@ -14,15 +14,15 @@
 
 
 void CTRL_initNaviStruct(void){
-	NAVI_Struct.NAVI_CH1 = 0;
-	NAVI_Struct.NAVI_CH2 = 0;
-	NAVI_Struct.NAVI_CH3 = 0;
-	NAVI_Struct.NAVI_CH4 = 0;
+	NAVI_Struct.NAVI_CH1 = 50;	//Elevator-Pitch
+	NAVI_Struct.NAVI_CH2 = 50;	//Aileron-Roll
+	NAVI_Struct.NAVI_CH3 = 0;	//Throttle-Altitude
+	NAVI_Struct.NAVI_CH4 = 50;	//Rudder-Yaw
 
-	NAVI_Struct.RC_CH1 = 0;
-	NAVI_Struct.RC_CH2 = 0;
-	NAVI_Struct.RC_CH3 = 0;
-	NAVI_Struct.RC_CH4 = 0;
+	NAVI_Struct.RC_CH1 = 0;		//Elevator-Pitch
+	NAVI_Struct.RC_CH2 = 0;		//Aileron-Roll
+	NAVI_Struct.RC_CH3 = 0;		//Throttle-Altitude
+	NAVI_Struct.RC_CH4 = 0;		//Rudder-Yaw
 	NAVI_Struct.RC_CH5 = 0;
 	NAVI_Struct.RC_CH6 = 0;
 	NAVI_Struct.Freq = 0;
@@ -31,6 +31,7 @@ void CTRL_initNaviStruct(void){
 	NAVI_Struct.FaultM = 0;
 	NAVI_Struct.FaultC = 0;
 	NAVI_Struct.FaultTime = 0;
+
 }
 
 
