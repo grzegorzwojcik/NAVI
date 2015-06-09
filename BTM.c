@@ -66,6 +66,7 @@ void BTM_initUART(void){
 	GV_flag_BTMTX = 0;
 }
 
+/* Clearing BTM buffor */
 void BTM_ClearBuffor(){
 	uint8_t tmp = 0;
 	for (tmp = 0; tmp < BTM_BUFFOR_LENGTH; tmp++){
@@ -73,14 +74,73 @@ void BTM_ClearBuffor(){
 	}
 }
 
+/* Sending a string */
 void USART_puts(USART_TypeDef* USARTx, volatile char *s){
-
 	while(*s){
 		// wait until data register is empty
 		while( !(USARTx->SR & 0x00000040) );
 		USART_SendData(USARTx, *s);
 		*s++;
 	}
+}
+
+/*
+* @brief Function Name  : Checksum function
+* @brief Description    : This function generates CRC of the GV_bufforBTM string. After detecting 'StartChar' it starts
+* 							generating the CRC and stops when '*' is detected. The CRC does not consider
+* 							'StartCHar', nor '*' sign.
+* @param StartChar		: Char, after which CRC generation is started
+* @param Length			: String length
+* @return				: uint8_t CRC
+*
+* @example				: CRC of the: "#,2,0,0,1,600,* is 53 (decimal)"
+* @INFO						: this function uses global variable GV_bufforBTM[]
+*/
+uint8_t BTM_calculateCRC(char StartChar, uint8_t Length){
+	uint8_t XOR = 0;	// set CRC to 0
+	uint8_t i = 0;
+
+	for( XOR = 0, i = 0; i < Length; i++ ){
+		if(GV_bufforBTM[i] == '*')
+			break;
+		if(GV_bufforBTM[i] != StartChar)
+			XOR ^= GV_bufforBTM[i];
+	}
+
+	return XOR;
+}
+
+/*
+* @brief Function Name  	: Checksum check
+* @brief Description    	: This function compares CRC included in received data frame with the generated one.
+* @param GeneratedChecksum	: Checksum generated for example by BTM_calculateCRC
+* @return 					: 0 = CRCs do not match, 1 = CRCs match
+*
+* @INFO						: this function uses global variable GV_bufforBTM[]
+*/
+uint8_t BTM_checkCRC(uint8_t GeneratedChecksum, uint8_t Length){
+	char checksum[5] = {0};
+	static uint8_t i,j = 0;
+	static uint8_t tmp = 0;	// zmienna pomocnicza
+	static uint8_t status = 0;	// 0 - CRCs do not match, 1 - CRCs match
+
+	for( i = 0, j = 0, tmp = 0, status = 0; i < Length; i++){
+		if( tmp == 1 ){
+			checksum[j] = GV_bufforBTM[i];
+			j++;
+		}
+		if( GV_bufforBTM[i] == '*' ){
+			tmp = 1;
+		}
+		if( tmp == 1 && GV_bufforBTM[i] == ',')
+			break;
+	}
+	if(atoi(checksum) == GeneratedChecksum )
+		status = 1;
+	else
+		status = 0;
+
+	return status;
 }
 
 void USART1_IRQHandler(void){
@@ -90,7 +150,7 @@ void USART1_IRQHandler(void){
 		char t = USART1->DR; 		// Received character from USART1 data register is saved in
 
 		if( GV_flag_BTMRX == 0 ){
-			if( t == '%' ){
+			if( t == '%' ){			// Data frame first sign
 				cnt = 0;
 				GV_bufforBTM[cnt] = t;
 				cnt++;
