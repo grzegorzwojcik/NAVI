@@ -57,11 +57,9 @@ int main(void)
 		while (1)
 		{
 			if(GV_flag_BTMRX == 1 ){
-				uint8_t btm_CRC = BTM_calculateCRC('%', BTM_BUFFOR_LENGTH);
-				BTM_checkCRC(btm_CRC, BTM_BUFFOR_LENGTH);
-				CTRL_DataProcess();
+				if( BTM_checkCRC('%', BTM_BUFFOR_LENGTH) == 1 )
+					CTRL_DataProcess();
 				BTM_ClearBuffor();
-				USART_puts(USART1, "chuj");
 				GV_flag_BTMRX = 0;
 			}
 
