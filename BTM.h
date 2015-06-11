@@ -9,7 +9,7 @@
 #define BTM_H_
 
 /*** PREDEFINED SETTINGS	***/
-#define BTM_PORT 			GPIOB
+#define BTM_PORT 			GPIOA
 #define BTM_USART1_TX		GPIO_Pin_9
 #define BTM_USART1_RX		GPIO_Pin_10
 #define BTM_BUFFOR_LENGTH	30

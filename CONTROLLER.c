@@ -53,7 +53,7 @@ void CTRL_initTIM(void){
 
 void CTRL_DataProcess(void){
 	/* Sample frame:
-	 	 %,1,44,33,22,11,*CRC,0x0A0x0D
+	 	 #,1,44,33,22,11,*CRC,0x0A0x0D
 	 */
 	static uint8_t CommaCounter;
 	static uint8_t i;
@@ -108,7 +108,7 @@ void CTRL_DataProcess(void){
 			}
 		}
 
-		if( GV_bufforBTM[i] == '%')	//set flag to 1 when first ',' is detected
+		if( GV_bufforBTM[i] == '#')	//set flag to 1 when first ',' is detected
 			StartProcessingFlag = 1;
 	}
 

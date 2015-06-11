@@ -40,7 +40,7 @@ void FAULTS_Servo_initTIM(void){
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
 
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-	TIM_OCInitStructure.TIM_Pulse = 60;
+	TIM_OCInitStructure.TIM_Pulse = 250;
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 	TIM_OC3Init(TIM2, &TIM_OCInitStructure);
@@ -53,9 +53,9 @@ void FAULTS_Servo_initTIM(void){
 
 
 void FAULTS_injectSERVO(void){
-	TIM2->CCR3 = 250;
+	TIM2->CCR3 = 60;
 }
 
 void FAULTS_removalSERVO(void){
-	TIM2->CCR3 = 60;
+	TIM2->CCR3 = 250;
 }

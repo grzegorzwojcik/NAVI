@@ -28,29 +28,37 @@ void BTM_initGPIO(void){
 	 * USART1:
 	 * TX: PA9
 	 * RX: PA10 */
+	/*	PA0 & PA1 are run through pins for BTM TX & RX lines	*/
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = BTM_USART1_TX;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(BTM_PORT, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Pin = BTM_USART1_RX;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_Init(BTM_PORT, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 void BTM_initUART(void){
 
 	USART_InitTypeDef USART_InitStructure;
 	USART_InitStructure.USART_BaudRate = 115200;
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-	USART_InitStructure.USART_Parity = USART_Parity_No;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;
+	USART_InitStructure.USART_Parity = USART_Parity_No;
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+
 	USART_Init(USART1, &USART_InitStructure);
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); 			// Enable the USART1 receive and transmit interrupt
 	//USART_ITConfig(USART1, USART_IT_TXE, ENABLE); 			// Enable the USART1 receive and transmit interrupt
+	USART_Cmd(USART1, ENABLE);
 
 	NVIC_InitTypeDef NVIC_InitStruct;
 	NVIC_InitStruct.NVIC_IRQChannel = USART1_IRQn;
@@ -61,7 +69,6 @@ void BTM_initUART(void){
 
 	//USART_ClearFlag(USART1, USART_FLAG_RXNE);
 	//USART_ClearFlag(USART1, USART_FLAG_TXE);
-	USART_Cmd(USART1, ENABLE);
 	GV_flag_BTMRX = 0;
 	GV_flag_BTMTX = 0;
 }
@@ -153,12 +160,12 @@ void USART1_IRQHandler(void){
 		char t = USART1->DR; 		// Received character from USART1 data register is saved in
 
 		if( GV_flag_BTMRX == 0 ){
-			if( t == '%' ){			// Data frame first sign
+			if( t == '#' ){			// Data frame first sign
 				cnt = 0;
 				GV_bufforBTM[cnt] = t;
 				cnt++;
 			}
-			if( (t != '%') && (GV_bufforBTM[0] == '%') ){
+			if( (t != '#') && (GV_bufforBTM[0] == '#') ){
 				GV_bufforBTM[cnt] = t;
 				cnt++;
 

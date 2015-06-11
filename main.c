@@ -53,15 +53,21 @@ int main(void)
 		FAULTS_Servo_initTIM();		// 50 Hz PWM (together with control loop below
 		CTRL_initTIM();				// 50 Hz control loop
 		SysTick_Config(SystemCoreClock/1000);	// SysTick 1 kHZ (1ms interval)
+		uint32_t tmpreg = 0x00;
 
+		tmpreg = USART1->CR1;
 		while (1)
 		{
+
 			if(GV_flag_BTMRX == 1 ){
-				if( BTM_checkCRC('%', BTM_BUFFOR_LENGTH) == 1 )
+				if( BTM_checkCRC('#', BTM_BUFFOR_LENGTH) == 1 )
 					CTRL_DataProcess();
 				BTM_ClearBuffor();
+				//USART_puts(USART1, "dziala");
+				//while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				GV_flag_BTMRX = 0;
 			}
+
 		}
 	}
 	else
