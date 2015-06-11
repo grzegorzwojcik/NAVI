@@ -160,12 +160,12 @@ void USART1_IRQHandler(void){
 		char t = USART1->DR; 		// Received character from USART1 data register is saved in
 
 		if( GV_flag_BTMRX == 0 ){
-			if( t == '#' ){			// Data frame first sign
+			if( t == BTM_DF_CHAR ){			// Data frame first sign
 				cnt = 0;
 				GV_bufforBTM[cnt] = t;
 				cnt++;
 			}
-			if( (t != '#') && (GV_bufforBTM[0] == '#') ){
+			if( (t != BTM_DF_CHAR) && (GV_bufforBTM[0] == BTM_DF_CHAR) ){
 				GV_bufforBTM[cnt] = t;
 				cnt++;
 
