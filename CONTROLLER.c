@@ -14,41 +14,40 @@
 
 
 void CTRL_initNaviStruct(void){
-	NAVI_Struct.NAVI_CH1 = 50;	//Elevator-Pitch
-	NAVI_Struct.NAVI_CH2 = 50;	//Aileron-Roll
-	NAVI_Struct.NAVI_CH3 = 0;	//Throttle-Altitude
-	NAVI_Struct.NAVI_CH4 = 50;	//Rudder-Yaw
+	NAVI_Struct.NAVIGATOR_CH1 = 50;		//Elevator-Pitch
+	NAVI_Struct.NAVIGATOR_CH2 = 50;		//Aileron-Roll
+	NAVI_Struct.NAVIGATOR_CH3 = 0;		//Throttle-Altitude
+	NAVI_Struct.NAVIGATOR_CH4 = 50;		//Rudder-Yaw
 
-	NAVI_Struct.RC_CH1 = 0;		//Elevator-Pitch
-	NAVI_Struct.RC_CH2 = 0;		//Aileron-Roll
-	NAVI_Struct.RC_CH3 = 0;		//Throttle-Altitude
-	NAVI_Struct.RC_CH4 = 0;		//Rudder-Yaw
-	NAVI_Struct.RC_CH5 = 0;
-	NAVI_Struct.RC_CH6 = 0;
-	NAVI_Struct.Freq = 0;
+	NAVI_Struct.RC_CH1 		= 0;		//Elevator-Pitch
+	NAVI_Struct.RC_CH2 		= 0;		//Aileron-Roll
+	NAVI_Struct.RC_CH3 		= 0;		//Throttle-Altitude
+	NAVI_Struct.RC_CH4 		= 0;		//Rudder-Yaw
+	NAVI_Struct.RC_CH5 		= 0;		//Switches output PWM signals between RC(1-4) and NAVI(1-4)
+	NAVI_Struct.RC_CH6 		= 0;
+	NAVI_Struct.Freq 		= 0;
 
-	NAVI_Struct.FaultE = 0;
-	NAVI_Struct.FaultM = 0;
-	NAVI_Struct.FaultC = 0;
-	NAVI_Struct.FaultTime = 0;
+	NAVI_Struct.FaultE 		= 0;
+	NAVI_Struct.FaultM 		= 0;
+	NAVI_Struct.FaultC 		= 0;
+	NAVI_Struct.FaultTime 	= 0;
 
 }
 
-void CTRL_initAUTOPILOT_RCC(void){
+void CTRL_initNAVI_RCC(void){
 	RCC_APB1PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
 }
 
-void CTRL_initAUTOPILOT_GPIO(void){
+void CTRL_initNAVI_GPIO(void){
 	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Pin = AUTOPILOT_CH1 | AUTOPILOT_CH2 | AUTOPILOT_CH3 | AUTOPILOT_CH4;
+	GPIO_InitStructure.GPIO_Pin = NAVI_CH1 | NAVI_CH2 | NAVI_CH3 | NAVI_CH4;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(AUTOPILOT_GPIO, &GPIO_InitStructure);
+	GPIO_Init(NAVI_GPIO, &GPIO_InitStructure);
 }
 
-
-void CTRL_initAUTOPILOT_PWM(void){
+void CTRL_initNAVI_PWM(void){
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
 
@@ -64,22 +63,22 @@ void CTRL_initAUTOPILOT_PWM(void){
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 
 	/* CHANNEL 1 */
-	TIM_OCInitStructure.TIM_Pulse = 250;
+	TIM_OCInitStructure.TIM_Pulse = 100;
 	TIM_OC1Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
 	/* CHANNEL 2 */
-	TIM_OCInitStructure.TIM_Pulse = 250;
+	TIM_OCInitStructure.TIM_Pulse = 100;
 	TIM_OC2Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
 	/* CHANNEL 3 */
-	TIM_OCInitStructure.TIM_Pulse = 250;
+	TIM_OCInitStructure.TIM_Pulse = 100;
 	TIM_OC3Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC3PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
 	/* CHANNEL 4 */
-	TIM_OCInitStructure.TIM_Pulse = 250;
+	TIM_OCInitStructure.TIM_Pulse = 100;
 	TIM_OC4Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC4PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
@@ -169,10 +168,10 @@ void CTRL_DataProcess(void){
 	tmp = atoi(FRAME);
 	switch (tmp){
 		case 1:				// Data frame is related to the QUADRO CONTROL
-			NAVI_Struct.NAVI_CH1 = atoi(DATA1);
-			NAVI_Struct.NAVI_CH2 = atoi(DATA2);
-			NAVI_Struct.NAVI_CH3 = atoi(DATA3);
-			NAVI_Struct.NAVI_CH4 = atoi(DATA4);
+			NAVI_Struct.NAVIGATOR_CH1 = atoi(DATA1);
+			NAVI_Struct.NAVIGATOR_CH2 = atoi(DATA2);
+			NAVI_Struct.NAVIGATOR_CH3 = atoi(DATA3);
+			NAVI_Struct.NAVIGATOR_CH4 = atoi(DATA4);
 			break;
 		case 2:				// Data frame is related to the FAULT INJECTION AND REMOVAL
 			NAVI_Struct.FaultE = atoi(DATA1);

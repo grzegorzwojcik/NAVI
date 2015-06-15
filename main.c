@@ -52,9 +52,9 @@ int main(void)
 		FAULTS_Servo_initGPIO();
 		FAULTS_Servo_initTIM();		// 50 Hz PWM (together with control loop below
 		CTRL_initTIM();				// 50 Hz control loop
-		CTRL_initAUTOPILOT_RCC();	// 50 Hz Autopilot PWMs
-		CTRL_initAUTOPILOT_GPIO();	// 50 Hz Autopilot PWMs
-		CTRL_initAUTOPILOT_PWM();	// 50 Hz Autopilot PWMs
+		CTRL_initNAVI_RCC();		// 50 Hz Autopilot PWMs
+		CTRL_initNAVI_GPIO();		// 50 Hz Autopilot PWMs
+		CTRL_initNAVI_PWM();		// 50 Hz Autopilot PWMs
 		SysTick_Config(SystemCoreClock/1000);	// SysTick 1 kHZ (1ms interval)
 
 		while (1)
