@@ -65,7 +65,7 @@ int main(void)
 			if(GV_flag_BTMRX == 1 ){
 				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFOR_LENGTH) == 1 ){
 					CTRL_DataProcess();
-					USART_puts(USART1, "Structure updates");
+					USART_puts(USART1, "Structure updated");
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				}
 				else{
