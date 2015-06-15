@@ -65,11 +65,19 @@ int main(void)
 			if(GV_flag_BTMRX == 1 ){
 				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFOR_LENGTH) == 1 ){
 					CTRL_DataProcess();
-					USART_puts(USART1, "Structure updated"+0x0D + 0x0A);
+					USART_puts(USART1, "Structure updated");
+					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+					USART_SendData(USART1, 0X0A);
+					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+					USART_SendData(USART1, 0X0D);
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				}
 				else{
-					USART_puts(USART1, "Data frame error"+0x0D + 0x0A);
+					USART_puts(USART1, "Data frame error");
+					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+					USART_SendData(USART1, 0X0A);
+					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+					USART_SendData(USART1, 0X0D);
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				}
 				BTM_ClearBuffor();
