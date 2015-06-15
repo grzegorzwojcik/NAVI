@@ -57,28 +57,27 @@ void CTRL_initNAVI_PWM(void){
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
 
-
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 
-	/* CHANNEL 1 */
-	TIM_OCInitStructure.TIM_Pulse = 100;
+	/* CHANNEL 1 (NAVI_CH4 - PB6)*/
+	TIM_OCInitStructure.TIM_Pulse = 50;
 	TIM_OC1Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
-	/* CHANNEL 2 */
+	/* CHANNEL 2 (NAVI_CH3 - PB7)*/
 	TIM_OCInitStructure.TIM_Pulse = 100;
 	TIM_OC2Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
-	/* CHANNEL 3 */
-	TIM_OCInitStructure.TIM_Pulse = 100;
+	/* CHANNEL 3 (NAVI_CH1 - PB8)*/
+	TIM_OCInitStructure.TIM_Pulse = 150;
 	TIM_OC3Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC3PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
-	/* CHANNEL 4 */
-	TIM_OCInitStructure.TIM_Pulse = 100;
+	/* CHANNEL 4 (NAVI_CH2 - PB9)*/
+	TIM_OCInitStructure.TIM_Pulse = 150;
 	TIM_OC4Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC4PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
@@ -105,7 +104,9 @@ void CTRL_initTIM(void){
 
 void CTRL_DataProcess(void){
 	/* Sample frame:
-	 	 #,1,44,33,22,11,*CRC,0x0A0x0D
+	 	#,1,44,33,22,11,*CRC,0x0A0x0D
+	 	#,1,50,50,66,33,*49,
+		#,1,50,50,69,32,*63,
 	 */
 	static uint8_t CommaCounter;
 	static uint8_t i;
