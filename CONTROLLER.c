@@ -34,6 +34,59 @@ void CTRL_initNaviStruct(void){
 
 }
 
+void CTRL_initAUTOPILOT_RCC(void){
+	RCC_APB1PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
+}
+
+void CTRL_initAUTOPILOT_GPIO(void){
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Pin = AUTOPILOT_CH1 | AUTOPILOT_CH2 | AUTOPILOT_CH3 | AUTOPILOT_CH4;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(AUTOPILOT_GPIO, &GPIO_InitStructure);
+}
+
+
+void CTRL_initAUTOPILOT_PWM(void){
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef  TIM_OCInitStructure;
+
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseStructure.TIM_Prescaler = 720-1;		// 72MHz / 720 = 100kHz
+	TIM_TimeBaseStructure.TIM_Period = 2000-1;			// 100kHz / 2000 = 50Hz
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+
+
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+
+	/* CHANNEL 1 */
+	TIM_OCInitStructure.TIM_Pulse = 250;
+	TIM_OC1Init(TIM4, &TIM_OCInitStructure);
+	TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
+
+	/* CHANNEL 2 */
+	TIM_OCInitStructure.TIM_Pulse = 250;
+	TIM_OC2Init(TIM4, &TIM_OCInitStructure);
+	TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
+
+	/* CHANNEL 3 */
+	TIM_OCInitStructure.TIM_Pulse = 250;
+	TIM_OC3Init(TIM4, &TIM_OCInitStructure);
+	TIM_OC3PreloadConfig(TIM4, TIM_OCPreload_Enable);
+
+	/* CHANNEL 4 */
+	TIM_OCInitStructure.TIM_Pulse = 250;
+	TIM_OC4Init(TIM4, &TIM_OCInitStructure);
+	TIM_OC4PreloadConfig(TIM4, TIM_OCPreload_Enable);
+
+	TIM_ARRPreloadConfig(TIM4, ENABLE);
+	TIM_Cmd(TIM4, ENABLE);
+}
+
 /* This functions MUST be executed after FAULTS_Servo_initTIM() @Faults.h */
 /* 50 Hz control loop */
 void CTRL_initTIM(void){

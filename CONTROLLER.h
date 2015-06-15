@@ -10,6 +10,13 @@
 
 /*** PREDEFINED SETTINGS	***/
 /* Typedefs ------------------------------------------------------------------*/
+#define AUTOPILOT_CH1	GPIO_Pin_8		//Elevator	-Pitch 		(TIM5_CH1)
+#define AUTOPILOT_CH2	GPIO_Pin_9		//Aileron	-Roll		(TIM5_CH2)
+#define AUTOPILOT_CH3	GPIO_Pin_7		//Throttle	-Altitude	(TIM5_CH3)
+#define AUTOPILOT_CH4	GPIO_Pin_6		//Rudder	-Yaw		(TIM5_CH4)
+#define AUTOPILOT_GPIO	GPIOB
+
+
 typedef struct{
 		uint16_t RC_CH1;	//Elevator	-Pitch
 		uint16_t RC_CH2;	//Aileron	-Roll
@@ -35,6 +42,9 @@ typedef struct{
 volatile NAVI NAVI_Struct;
 /* Private functions ---------------------------------------------------------*/
 void CTRL_initNaviStruct(void);
+void CTRL_initAUTOPILOT_RCC(void);
+void CTRL_initAUTOPILOT_GPIO(void);
+void CTRL_initAUTOPILOT_PWM(void);
 void CTRL_initTIM(void);		// This functions MUST be executed after FAULTS_Servo_initTIM() @Faults.h
 void CTRL_DataProcess(void);
 

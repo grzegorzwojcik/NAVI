@@ -13,7 +13,7 @@
 #define BTM_USART1_TX		GPIO_Pin_9
 #define BTM_USART1_RX		GPIO_Pin_10
 #define BTM_BUFFOR_LENGTH	30
-#define BTM_DF_CHAR			'%'		// Data frame starting character
+#define BTM_DF_CHAR			'#'		// Data frame starting character
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/

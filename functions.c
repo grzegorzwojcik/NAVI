@@ -83,7 +83,8 @@ void TIM2_IRQHandler(void){
 		if(NAVI_Struct.FaultM == 1)
 			FAULTS_injectSERVO();
 		if(NAVI_Struct.FaultM == 0)
-			FAULTS_removalSERVO();
+			//FAULTS_removalSERVO();
+			TIM2->CCR3 = 20;
 	}
 }
 
