@@ -51,6 +51,8 @@ int main(void)
 		FAULTS_initRCC();
 		FAULTS_Servo_initGPIO();
 		FAULTS_Servo_initTIM();		// 50 Hz PWM (together with control loop below
+
+		CTRL_initNaviStruct();
 		CTRL_initTIM();				// 50 Hz control loop
 		CTRL_initNAVI_RCC();		// 50 Hz Autopilot PWMs
 		CTRL_initNAVI_GPIO();		// 50 Hz Autopilot PWMs
@@ -61,11 +63,16 @@ int main(void)
 		{
 
 			if(GV_flag_BTMRX == 1 ){
-				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFOR_LENGTH) == 1 )
+				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFOR_LENGTH) == 1 ){
 					CTRL_DataProcess();
+					USART_puts(USART1, "Structure updates");
+					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+				}
+				else{
+					USART_puts(USART1, "Data frame error");
+					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+				}
 				BTM_ClearBuffor();
-				//USART_puts(USART1, "dziala");
-				//while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				GV_flag_BTMRX = 0;
 			}
 		}

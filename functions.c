@@ -86,11 +86,7 @@ void TIM2_IRQHandler(void){
 			//FAULTS_removalSERVO();
 			TIM2->CCR3 = 20;
 
-		/*	Calculating % to PWM, PWM =  (%*200) / 100	*/
-		TIM4->CCR3 = NAVI_Struct.NAVIGATOR_CH1 * 2;	// NAVI_CH1	(PITCH)
-		TIM4->CCR4 = NAVI_Struct.NAVIGATOR_CH2 * 2;	// NAVI_CH2 (ROLL)
-		TIM4->CCR2 = NAVI_Struct.NAVIGATOR_CH3 * 2;	// NAVI_CH3 (THROTTLE)
-		TIM4->CCR1 = NAVI_Struct.NAVIGATOR_CH4 * 2;	// NAVI_CH4 (YAW)
+		CTRL_controlAUTOPILOT(0, 100, 65, 200);
 	}
 }
 

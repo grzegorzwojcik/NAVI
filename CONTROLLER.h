@@ -45,7 +45,10 @@ void CTRL_initNaviStruct(void);
 void CTRL_initNAVI_RCC(void);
 void CTRL_initNAVI_GPIO(void);
 void CTRL_initNAVI_PWM(void);
-void CTRL_initTIM(void);		// This functions MUST be executed after FAULTS_Servo_initTIM() @Faults.h
-void CTRL_DataProcess(void);
+void CTRL_initTIM(void);			// This functions MUST be executed after FAULTS_Servo_initTIM() @Faults.h
+void CTRL_DataProcess(void);		// Processing received data frames and completing the NAVI_Struct variables
+void CTRL_controlAUTOPILOT(uint8_t Prc_Min, uint8_t Prc_Max, uint16_t PWM_Min, uint16_t PWM_Max);
+	// CTRL_controlAUTOPILOT -			Generating control signals (50Hz PWMs) for the Autopilot (Flight controller)
+										// These signals are based on data received from mobile devices
 
 #endif /* CONTROLLER_H_ */

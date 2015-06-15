@@ -62,22 +62,22 @@ void CTRL_initNAVI_PWM(void){
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
 
 	/* CHANNEL 1 (NAVI_CH4 - PB6)*/
-	TIM_OCInitStructure.TIM_Pulse = 50;
+	TIM_OCInitStructure.TIM_Pulse = 65;
 	TIM_OC1Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC1PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
 	/* CHANNEL 2 (NAVI_CH3 - PB7)*/
-	TIM_OCInitStructure.TIM_Pulse = 100;
+	TIM_OCInitStructure.TIM_Pulse = 65;
 	TIM_OC2Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC2PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
 	/* CHANNEL 3 (NAVI_CH1 - PB8)*/
-	TIM_OCInitStructure.TIM_Pulse = 150;
+	TIM_OCInitStructure.TIM_Pulse = 65;
 	TIM_OC3Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC3PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
 	/* CHANNEL 4 (NAVI_CH2 - PB9)*/
-	TIM_OCInitStructure.TIM_Pulse = 150;
+	TIM_OCInitStructure.TIM_Pulse = 65;
 	TIM_OC4Init(TIM4, &TIM_OCInitStructure);
 	TIM_OC4PreloadConfig(TIM4, TIM_OCPreload_Enable);
 
@@ -182,6 +182,56 @@ void CTRL_DataProcess(void){
 		default:
 			break;
 	}
+}
+
+
+/*
+* @brief Function Name  	: CTRL_controlAUTOPILOT check
+* @brief Description    	: This function generates PWMs that are input to the Autopilot (Flight controller) board
+* @param Prc_Min			: Minimum accepted % to be converted into PWM
+* @param Prc_Max			: Maximum accepted % to be converted into PWM
+* @param PWM_Min			: Minimal PWM output
+* @param PWM_Max			: Maximum PWM output
+* @return 					: None
+*
+* @INFO						: this function uses global variable GV_bufforBTM[]
+*/
+void CTRL_controlAUTOPILOT(uint8_t Prc_Min, uint8_t Prc_Max, uint16_t PWM_Min, uint16_t PWM_Max){
+	static uint8_t tmp = 0;
+	static uint8_t CH1 = 0;
+	static uint8_t CH2 = 0;
+	static uint8_t CH3 = 0;
+	static uint8_t CH4 = 0;
+	tmp = PWM_Max - PWM_Min;
+
+	CH1 = (NAVI_Struct.NAVIGATOR_CH1 * tmp / 100) + PWM_Min;	// NAVI_CH1	(PITCH)
+	if( CH1 > PWM_Max )
+		CH1 = PWM_Max;
+	if( CH1 < PWM_Min)
+		CH1 = PWM_Min;
+
+	CH2 = (NAVI_Struct.NAVIGATOR_CH2 * tmp / 100) + PWM_Min;	// NAVI_CH2 (ROLL)
+	if( CH2 > PWM_Max )
+		CH2 = PWM_Max;
+	if( CH2 < PWM_Min)
+		CH2 = PWM_Min;
+
+	CH3 = (NAVI_Struct.NAVIGATOR_CH3 * tmp / 100) + PWM_Min;	// NAVI_CH3 (THROTTLE)
+	if( CH3 > PWM_Max )
+		CH3 = PWM_Max;
+	if( CH3 < PWM_Min)
+		CH3 = PWM_Min;
+
+	CH4 = (NAVI_Struct.NAVIGATOR_CH4 * tmp / 100) + PWM_Min;	// NAVI_CH4 (YAW)
+	if( CH4 > PWM_Max )
+		CH4 = PWM_Max;
+	if( CH4 < PWM_Min)
+		CH4 = PWM_Min;
+
+	TIM4->CCR3 = CH1;		// NAVI_CH1	(PITCH)
+	TIM4->CCR4 = CH2;		// NAVI_CH2 (ROLL)
+	TIM4->CCR2 = CH3;		// NAVI_CH3 (THROTTLE)
+	TIM4->CCR1 = CH4;		// NAVI_CH4 (YAW)
 }
 
 
