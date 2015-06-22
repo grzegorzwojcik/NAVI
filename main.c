@@ -21,6 +21,7 @@
 #include "BTM.h"
 #include "CONTROLLER.h"
 #include "FAULTS.h"
+#include "SPI.h"
 
 /* Private typedef */
 /* Private define  */
@@ -51,6 +52,11 @@ int main(void)
 		FAULTS_initRCC();
 		FAULTS_Servo_initGPIO();
 		FAULTS_Servo_initTIM();		// 50 Hz PWM (together with control loop below
+
+		SPI_initRCC();
+		SPI_initGPIO();
+		SPI_initSPI();
+		SPI_initSD();
 
 		CTRL_initNaviStruct();
 		CTRL_initTIM();				// 50 Hz control loop
