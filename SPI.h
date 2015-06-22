@@ -32,11 +32,5 @@ void SPI_initSPI(void);
 void SPI_initSD(void);
 
 
-void SELECT(void);
-void DESELECT(void);
-void xmit_spi(BYTE Data);
-BYTE rcvr_spi(void);
-BYTE wait_ready(void);
-
 
 #endif /* SPI_H_ */

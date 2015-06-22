@@ -20,6 +20,7 @@
 #include "functions.h"
 #include "CONTROLLER.h"
 #include "FAULTS.h"
+#include "diskio.h"
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -74,6 +75,9 @@ void SysTick_Handler(void)
 	if( GV_SystemCounter >= 2000 ){
 		GV_SystemCounter = 0;
 	}
+
+	if( GV_SystemCounter % 10 != 0)	// execute it every 10 ms
+		disk_timerproc();
 }
 
 void TIM2_IRQHandler(void){

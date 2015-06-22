@@ -22,6 +22,8 @@
 #include "CONTROLLER.h"
 #include "FAULTS.h"
 #include "SPI.h"
+#include "ff.h"
+#include "diskio.h"
 
 /* Private typedef */
 /* Private define  */
@@ -56,7 +58,7 @@ int main(void)
 		SPI_initRCC();
 		SPI_initGPIO();
 		SPI_initSPI();
-		SPI_initSD();
+		power_on();
 
 		CTRL_initNaviStruct();
 		CTRL_initTIM();				// 50 Hz control loop

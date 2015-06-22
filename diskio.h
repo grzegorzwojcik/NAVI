@@ -13,6 +13,8 @@ extern "C" {
 #define _USE_IOCTL	1	/* 1: Enable disk_ioctl fucntion */
 
 #include "integer.h"
+#include "SPI.h"
+#include "stdbool.h"
 
 
 /* Status of Disk Functions */
@@ -34,9 +36,26 @@ typedef enum {
 
 DSTATUS disk_initialize (BYTE pdrv);
 DSTATUS disk_status (BYTE pdrv);
-DRESULT disk_read (BYTE pdrv, BYTE* buff, DWORD sector, UINT count);
-DRESULT disk_write (BYTE pdrv, const BYTE* buff, DWORD sector, UINT count);
 DRESULT disk_ioctl (BYTE pdrv, BYTE cmd, void* buff);
+void SELECT(void);
+void DESELECT(void);
+void xmit_spi(BYTE Data);
+BYTE rcvr_spi(void);
+BYTE wait_ready(void);
+void power_on (void);
+void power_off (void);
+int chk_power(void);
+bool rcvr_datablock (BYTE *buff, UINT btr);
+bool xmit_datablock (const BYTE *buff, BYTE token);
+BYTE send_cmd (BYTE cmd, DWORD arg);
+DSTATUS disk_status (BYTE drv);
+
+DSTATUS disk_initialize (BYTE drv);
+DRESULT disk_read (BYTE drv, BYTE *buff, DWORD sector, BYTE count);
+DRESULT disk_write (BYTE drv, const BYTE *buff, DWORD sector, BYTE count);
+DRESULT disk_ioctl (BYTE drv, BYTE ctrl, void *buff);
+DWORD get_fattime (void);
+void disk_timerproc (void);
 
 
 /* Disk Status Bits (DSTATUS) */
