@@ -27,6 +27,9 @@
 #define SD_CD		GPIO_Pin_5
 #define	SD_GPIO2	GPIOC
 
+/* Global variables ----------------------------------------------------------*/
+volatile uint8_t GV_SDdetected;		//1 = detected, 0 = not detected
+
 void SPI_initRCC(void);
 void SPI_initGPIO(void);
 void SPI_initSPI(void);

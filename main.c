@@ -66,7 +66,8 @@ int main(void)
 		CTRL_initNAVI_PWM();		// 50 Hz Autopilot PWMs
 		SysTick_Config(SystemCoreClock/1000);	// SysTick 1 kHZ (1ms interval)
 
-		SD_createLog();
+		SD_initCardDetect();
+
 		while (1)
 		{
 

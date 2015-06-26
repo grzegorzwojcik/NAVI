@@ -53,6 +53,43 @@ void SPI_initSD(void){
 	power_on();
 }
 
+void SD_initCardDetect(void){
+
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* Enable the GPIOC Clock */
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+	/* Configure the GPIO_LED pin */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+
+	/* Connect Button EXTI Line to Button GPIO Pin */
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource5);
+
+	/* Configure Button EXTI line */
+	EXTI_InitStructure.EXTI_Line = EXTI_Line5;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+
+    /* Enable and set Button EXTI Interrupt to the lowest priority */
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+}
+
+
+
 void SD_createLog(void){
 	FRESULT fresult;
 	FIL plik;
@@ -104,4 +141,22 @@ void SD_createLog(void){
 }
 
 
+/*
+* @brief Function Name  : EXTI9_5_IRQHandler
+* @brief Description    : SD card detect interrupt handler (PC5/EXTI5)
+* @param data           : None
+*/
+void EXTI9_5_IRQHandler(void){
 
+	  if(EXTI_GetITStatus(EXTI_Line5) != RESET)		//SD card detect interrupt handler (PC5/EXTI5)
+	  {
+	    if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == RESET ){
+	    	GV_SDdetected = 1;
+	    	SD_createLog();
+	    }
+	    else
+	    	GV_SDdetected = 0;
+	    /* Clear the EXTI line 0 pending bit */
+	    EXTI_ClearITPendingBit(EXTI_Line5);
+	  }
+}
