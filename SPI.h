@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include "stm32f10x.h"
 
-#include "integer.h"
+#include "diskio.h"
 #include "ff.h"
+#include "integer.h"
 
 
 #ifndef SPI_H_
@@ -31,6 +32,8 @@ void SPI_initGPIO(void);
 void SPI_initSPI(void);
 void SPI_initSD(void);
 
+void SD_createLog(void);
+void SD_updateLog(void);
 
 
 #endif /* SPI_H_ */

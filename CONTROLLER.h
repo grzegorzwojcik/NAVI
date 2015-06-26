@@ -30,10 +30,19 @@ typedef struct{
 		uint8_t NAVIGATOR_CH2;	//Aileron	-Roll
 		uint8_t NAVIGATOR_CH3;	//Throttle	-Altitude
 		uint8_t NAVIGATOR_CH4;	//Rudder	-Yaw
+
 		uint8_t FaultE;			//Electronic fault
 		uint8_t FaultM;			//Mechanical fault
 		uint8_t FaultC;			//Communication fault
 		uint16_t FaultTime;		//Time at which fault should be injected
+
+		char* DateYYYY;		//Year	e.g. 2015
+		char* DateMM;			//Month	e.g. 06
+		char* DateDD;			//Day	e.g. 08
+
+		uint8_t TimeHH;			//Hour e.g. 12
+		uint8_t TimeMM;			//Minutes e.g. 00
+		uint8_t TimeSS;			//Seconds e.g. 00
 }NAVI;
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/

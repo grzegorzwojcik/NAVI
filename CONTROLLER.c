@@ -16,7 +16,7 @@
 void CTRL_initNaviStruct(void){
 	NAVI_Struct.NAVIGATOR_CH1 = 50;		//Elevator-Pitch
 	NAVI_Struct.NAVIGATOR_CH2 = 50;		//Aileron-Roll
-	NAVI_Struct.NAVIGATOR_CH3 = 0;		//Throttle-Altitude
+	NAVI_Struct.NAVIGATOR_CH3 = 5;		//Throttle-Altitude
 	NAVI_Struct.NAVIGATOR_CH4 = 50;		//Rudder-Yaw
 
 	NAVI_Struct.RC_CH1 		= 0;		//Elevator-Pitch
@@ -31,6 +31,14 @@ void CTRL_initNaviStruct(void){
 	NAVI_Struct.FaultM 		= 0;
 	NAVI_Struct.FaultC 		= 0;
 	NAVI_Struct.FaultTime 	= 0;
+
+	NAVI_Struct.DateYYYY= "2015";
+	NAVI_Struct.DateMM	= "06";
+	NAVI_Struct.DateDD	= "26";
+
+	NAVI_Struct.TimeHH	= 12;
+	NAVI_Struct.TimeMM	= 00;
+	NAVI_Struct.TimeSS	= 05;
 
 }
 

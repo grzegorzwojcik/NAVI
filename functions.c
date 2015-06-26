@@ -77,9 +77,10 @@ void SysTick_Handler(void)
 	}
 
 	if( GV_SystemCounter % 10 != 0)	// execute it every 10 ms
-		disk_timerproc();
+		disk_timerproc();			// this function is used by the SD card libraries
 }
 
+/*		50 Hz control loop		*/
 void TIM2_IRQHandler(void){
 	if( TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET ){
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
@@ -87,8 +88,8 @@ void TIM2_IRQHandler(void){
 		if(NAVI_Struct.FaultM == 1)
 			FAULTS_injectSERVO();
 		if(NAVI_Struct.FaultM == 0)
-			FAULTS_removalSERVO();
-			//TIM2->CCR3 = 20;
+			//FAULTS_removalSERVO();
+			TIM2->CCR3 = 20;
 
 		CTRL_controlAUTOPILOT(0, 100, 65, 200);
 	}

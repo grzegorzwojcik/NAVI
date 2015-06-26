@@ -2,10 +2,11 @@
  * SPI.c
  *
  *  Created on: Jun 16, 2015
- *      Author: Grzegorz WÓJCIK
+ *      Author: Grzegorz WÃ“JCIK
  */
 
 #include "SPI.h"
+#include "CONTROLLER.h"
 #include "functions.h"
 
 
@@ -48,39 +49,59 @@ void SPI_initSPI(void){
 	SPI_Cmd(SPI1, ENABLE);
 }
 
-
 void SPI_initSD(void){
-	u8 i, cmd_arg[6];
-	u32 Count = 0xFFF;
-
-	DESELECT();	// CS = 1
-
-	for (i = 0; i < 10; i++)
-		xmit_spi(0xFF); // Wyslij 0xFF 10 razy = 80 cykli zegarowych
-						// (wymaganych co najmniej 74 cykli)
-	SELECT(); 	// CS = 0
-
-	// Przygotowanie ramki inicjujacej do wyslania
-	cmd_arg[0] = (0x40);//	cmd_arg[0] = (CMD0 | 0x40);
-	cmd_arg[1] = 0; // Argument komendy
-	cmd_arg[2] = 0; // nawet, gdy komenda go nie ma
-	cmd_arg[3] = 0; // musi zostac wyslany w postaci zer
-	cmd_arg[4] = 0;
-	cmd_arg[5] = 0x95; // CRC = 0x95
-	for (i = 0; i < 6; i++) // Wyslanie ramki
-		xmit_spi(cmd_arg[i]);
-
-	while ((rcvr_spi() != 0x01) && Count){
-		// Czeka na 0x01
-		Count--;
-		if(rcvr_spi() == 0x01)
-			GV_SystemCounter = GV_SystemCounter;
-	}
-
-
-	DESELECT(); // CS = 1
-	xmit_spi(0xFF); // Wyslij 0xFF
-
-	//PowerFlag = 1;
+	power_on();
 }
+
+void SD_createLog(void){
+	FRESULT fresult;
+	FIL plik;
+	WORD zapisanych_bajtow;
+	FATFS g_sFatFs;
+	//DIR directory;
+	FILINFO fileInfo;
+
+	static char mainFolder[7] = "AI-METH";	//Main folder name [SD card]
+	static char path[40] = {0};
+
+	f_mount(0, &g_sFatFs);		//Mount drive 0 [SD card]
+
+	sprintf(path, "%s", mainFolder);
+	fresult = f_stat(path, &fileInfo);			// Checking directory
+
+	switch (fresult) {
+		case FR_NO_FILE:						// Create if main folder is not present
+			f_mkdir(mainFolder);
+
+		case FR_OK:								// Proceed further if it is
+			//Create path for first subfolder (Name = YYYY)
+			sprintf(path, "%s/%s", mainFolder, NAVI_Struct.DateYYYY);
+			fresult = f_stat(path, &fileInfo);	//Check whether it already exists
+			if( fresult == FR_NO_FILE )
+				f_mkdir(path);
+
+			//Create path for second subfolder (Name = MM-DD)
+			sprintf(path, "%s/%s/%s-%s", mainFolder, NAVI_Struct.DateYYYY, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+			fresult = f_stat(path, &fileInfo);	//Check whether it already exists
+			if( fresult == FR_NO_FILE )
+				fresult = f_mkdir(path);
+
+			static uint8_t FileCounter = 0;
+			for( FileCounter = 0; FileCounter < 100; FileCounter++){
+				sprintf(path, "%s/%s/%s-%s/Flight%i.txt",
+						mainFolder, NAVI_Struct.DateYYYY, NAVI_Struct.DateMM, NAVI_Struct.DateDD, FileCounter);
+
+				if (f_stat(path, &fileInfo) == FR_NO_FILE){
+					fresult = f_open(&plik,path, FA_CREATE_ALWAYS | FA_WRITE);	//Create file and allow writing to it
+					fresult = f_close (&plik);
+					break;
+				}
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+
 

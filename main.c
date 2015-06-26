@@ -14,7 +14,6 @@
 
 /* Includes */
 #include <stddef.h>
-#include <stdlib.h>
 #include "stm32f10x.h"
 
 #include "functions.h"
@@ -58,7 +57,7 @@ int main(void)
 		SPI_initRCC();
 		SPI_initGPIO();
 		SPI_initSPI();
-
+		SPI_initSD();
 
 		CTRL_initNaviStruct();
 		CTRL_initTIM();				// 50 Hz control loop
@@ -67,29 +66,7 @@ int main(void)
 		CTRL_initNAVI_PWM();		// 50 Hz Autopilot PWMs
 		SysTick_Config(SystemCoreClock/1000);	// SysTick 1 kHZ (1ms interval)
 
-		power_on();
-
-		FRESULT fresult;
-		FIL plik;
-		WORD zapisanych_bajtow;
-		FATFS g_sFatFs;
-		DIR Dir;
-
-
-
-		fresult = f_mount(0, &g_sFatFs);
-		// Tworzenie pliku
-		fresult = f_open (&plik,"plik.txt", FA_CREATE_ALWAYS);
-		fresult = f_close (&plik);
-		// Tworzenie katalogu
-		fresult = f_mkdir("katalog1");
-		// Zapis pliku
-		fresult = f_open (&plik,"plik.txt", FA_WRITE);
-		fresult = f_write(&plik, "zawartosc pliku", 15, &zapisanych_bajtow);
-		fresult = f_close (&plik);
-		// Usuniecie pliku
-		//fresult = f_unlink("plik.txt");
-
+		SD_createLog();
 		while (1)
 		{
 
