@@ -92,24 +92,6 @@ int main(void)
 				BTM_ClearBuffor();
 				GV_flag_BTMRX = 0;
 			}
-
-			if(GV_SystemCounter%1000 == 0){
-				char czas[30] = {0};
-				sprintf(czas, "Current Time: %i:%i:%i.", NAVI_Struct.TimeHH, NAVI_Struct.TimeMM, NAVI_Struct.TimeSS);
-				USART_puts(USART1, czas);
-				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-				USART_SendData(USART1, 0X0A);
-				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-				USART_SendData(USART1, 0X0D);
-				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-				sprintf(czas, "Current Date: %i:%i:%i.", NAVI_Struct.DateYYYY, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
-				USART_puts(USART1, czas);
-				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-				USART_SendData(USART1, 0X0A);
-				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-				USART_SendData(USART1, 0X0D);
-				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-			}
 		}
 	}
 	else
