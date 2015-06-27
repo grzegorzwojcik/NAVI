@@ -112,24 +112,36 @@ void SD_createLog(void){
 
 		case FR_OK:								// Proceed further if it is
 			//Create path for first subfolder (Name = YYYY)
-			sprintf(path, "%s/%s", mainFolder, NAVI_Struct.DateYYYY);
+			sprintf(path, "%s/%i", mainFolder, NAVI_Struct.DateYYYY);
 			fresult = f_stat(path, &fileInfo);	//Check whether it already exists
 			if( fresult == FR_NO_FILE )
 				f_mkdir(path);
 
 			//Create path for second subfolder (Name = MM-DD)
-			sprintf(path, "%s/%s/%s-%s", mainFolder, NAVI_Struct.DateYYYY, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+			if(NAVI_Struct.DateMM < 10){
+				if( NAVI_Struct.DateDD < 10 )
+					sprintf(path, "%s/0%i-0%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+				else
+					sprintf(path, "%s/0%i-%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+			}
+			else{
+				if( NAVI_Struct.DateDD < 10 )
+					sprintf(path, "%s/%i-0%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+				else
+					sprintf(path, "%s/%i-%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+			}
+
 			fresult = f_stat(path, &fileInfo);	//Check whether it already exists
 			if( fresult == FR_NO_FILE )
 				fresult = f_mkdir(path);
 
 			static uint8_t FileCounter = 0;
 			for( FileCounter = 0; FileCounter < 100; FileCounter++){
-				sprintf(path, "%s/%s/%s-%s/Flight%i.txt",
-						mainFolder, NAVI_Struct.DateYYYY, NAVI_Struct.DateMM, NAVI_Struct.DateDD, FileCounter);
+				char path_tmp[40] = {0};
+				sprintf(path_tmp, "%s/Flight%i.txt", path ,FileCounter);
 
-				if (f_stat(path, &fileInfo) == FR_NO_FILE){
-					fresult = f_open(&plik,path, FA_CREATE_ALWAYS | FA_WRITE);	//Create file and allow writing to it
+				if (f_stat(path_tmp, &fileInfo) == FR_NO_FILE){
+					fresult = f_open(&plik,path_tmp, FA_CREATE_ALWAYS | FA_WRITE);	//Create file and allow writing to it
 					fresult = f_close (&plik);
 					break;
 				}

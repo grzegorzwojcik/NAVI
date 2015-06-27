@@ -146,7 +146,7 @@ uint8_t BTM_checkCRC(char StartChar, uint8_t Length){
 	}
 
 	/* 0 - CRCs do not match, 1 - CRCs match */
-	if(atoi(checksum) == XOR )
+	if(atoi(checksum) == XOR)
 		status = 1;
 	else
 		status = 0;

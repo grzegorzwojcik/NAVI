@@ -35,6 +35,7 @@ void SPI_initGPIO(void);
 void SPI_initSPI(void);
 void SPI_initSD(void);
 
+void SD_initCardDetect(void);
 void SD_createLog(void);
 void SD_updateLog(void);
 

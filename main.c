@@ -102,6 +102,13 @@ int main(void)
 				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				USART_SendData(USART1, 0X0D);
 				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+				sprintf(czas, "Current Date: %i:%i:%i.", NAVI_Struct.DateYYYY, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+				USART_puts(USART1, czas);
+				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+				USART_SendData(USART1, 0X0A);
+				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+				USART_SendData(USART1, 0X0D);
+				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 			}
 		}
 	}

@@ -32,9 +32,9 @@ void CTRL_initNaviStruct(void){
 	NAVI_Struct.FaultC 		= 0;
 	NAVI_Struct.FaultTime 	= 0;
 
-	NAVI_Struct.DateYYYY= "2015";
-	NAVI_Struct.DateMM	= "06";
-	NAVI_Struct.DateDD	= "26";
+	NAVI_Struct.DateYYYY= 2015;
+	NAVI_Struct.DateMM	= 6;
+	NAVI_Struct.DateDD	= 26;
 
 	NAVI_Struct.TimeHH	= 12;
 	NAVI_Struct.TimeMM	= 00;
@@ -110,11 +110,21 @@ void CTRL_initTIM(void){
 }
 
 
+/*
+* @brief Function Name  	: CTRL_DataProcess
+* @brief Description    	: This function processes the GV_bufforBTM data frame and completes
+* 								structure elements that are related to it.
+* @return 					: None
+*
+* @INFO						: this function uses global variable GV_bufforBTM[]
+*/
 void CTRL_DataProcess(void){
-	/* Sample frame:
+	/* Sample frames:
 	 	#,1,44,33,22,11,*CRC,0x0A0x0D
 	 	#,1,50,50,66,33,*49,
 		#,1,50,50,69,32,*63,
+		#,6,15:25:06,16:43:15,0,0,*55
+		#,2,0,0,0,5000,*7
 	 */
 	static uint8_t CommaCounter;
 	static uint8_t i;
@@ -126,10 +136,10 @@ void CTRL_DataProcess(void){
 
 	static char StartProcessingFlag = 0;	// Flag, set to 1 when '=' is detected
 	char FRAME[2]			= {0};	// Temporary char array
-	char DATA1[3]			= {0};	// Temporary char array
-	char DATA2[3]			= {0};	// Temporary char array
-	char DATA3[3]			= {0};	// Temporary char array
-	char DATA4[3]			= {0};	// Temporary char array
+	char DATA1[5]			= {0};	// Temporary char array
+	char DATA2[5]			= {0};	// Temporary char array
+	char DATA3[5]			= {0};	// Temporary char array
+	char DATA4[5]			= {0};	// Temporary char array
 
 
 	for( i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, CommaCounter = 0,
@@ -187,6 +197,17 @@ void CTRL_DataProcess(void){
 			NAVI_Struct.FaultM = atoi(DATA2);
 			NAVI_Struct.FaultC = atoi(DATA3);
 			NAVI_Struct.FaultTime = atoi(DATA4);
+			break;
+		case 6:			// Data frame is related to the current DATA sent, via Bluetooth, by external device
+			NAVI_Struct.DateYYYY = atoi(DATA1);
+			NAVI_Struct.DateMM = atoi(DATA2);
+			NAVI_Struct.DateDD = atoi(DATA3);
+			break;
+		case 7:			// Data frame is related to the current TIME sent, via Bluetooth, by external device
+			NAVI_Struct.TimeHH = atoi(DATA1);
+			NAVI_Struct.TimeMM = atoi(DATA2);
+			NAVI_Struct.TimeSS = atoi(DATA3);
+			break;
 		default:
 			break;
 	}
@@ -202,7 +223,7 @@ void CTRL_DataProcess(void){
 * @param PWM_Max			: Maximum PWM output
 * @return 					: None
 *
-* @INFO						: this function uses global variable GV_bufforBTM[]
+* @INFO						: this function uses global structure NAVI_Struct
 */
 void CTRL_controlAUTOPILOT(uint8_t Prc_Min, uint8_t Prc_Max, uint16_t PWM_Min, uint16_t PWM_Max){
 	static uint8_t tmp = 0;

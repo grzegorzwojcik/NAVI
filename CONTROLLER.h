@@ -36,9 +36,9 @@ typedef struct{
 		uint8_t FaultC;			//Communication fault
 		uint16_t FaultTime;		//Time at which fault should be injected
 
-		char* DateYYYY;		//Year	e.g. 2015
-		char* DateMM;			//Month	e.g. 06
-		char* DateDD;			//Day	e.g. 08
+		uint16_t DateYYYY;			//Year	e.g. 2015
+		uint8_t DateMM;			//Month	e.g. 06
+		uint8_t DateDD;			//Day	e.g. 08
 
 		uint8_t TimeHH;			//Hour e.g. 12
 		uint8_t TimeMM;			//Minutes e.g. 00
