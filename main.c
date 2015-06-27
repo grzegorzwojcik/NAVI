@@ -49,7 +49,7 @@ int main(void)
 	BTM_ClearBuffor();
 
 	/* Enter infinite loop only when clock frequencies are OK */
-	if( GV_SystemStatus == 1 ){
+	if( GV_SystemReady == 1 ){
 		FAULTS_initRCC();
 		FAULTS_Servo_initGPIO();
 		FAULTS_Servo_initTIM();		// 50 Hz PWM (together with control loop below
@@ -91,6 +91,17 @@ int main(void)
 				}
 				BTM_ClearBuffor();
 				GV_flag_BTMRX = 0;
+			}
+
+			if(GV_SystemCounter%1000 == 0){
+				char chuj[30] = {0};
+				sprintf(chuj, "Current Time: %i:%i:%i.", NAVI_Struct.TimeHH, NAVI_Struct.TimeMM, NAVI_Struct.TimeSS);
+				USART_puts(USART1, chuj);
+				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+				USART_SendData(USART1, 0X0A);
+				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+				USART_SendData(USART1, 0X0D);
+				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 			}
 		}
 	}

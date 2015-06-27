@@ -12,8 +12,12 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Global variables ----------------------------------------------------------*/
-volatile uint8_t GV_SystemStatus;	// 0 = BAD, 1 = OK
-volatile uint16_t GV_SystemCounter;	// counter incremented inside Systick
+volatile uint8_t GV_SystemReady;	// 0 = NOT READY, 1 = OK
+volatile uint16_t GV_SystemCounter;	// System time counter, incrementing within Systick handler
+volatile uint8_t GV_TimeStart;		// When set to 1, data is being saved to the SD Card
+volatile uint16_t GV_TimeCounter;	// time counter, which is DECREMENTING within Systick handler
+									// when it reaches 0, data is no more saved to the SD card [GV_TimeStart becomes 0]
+
 
 /* Private functions ---------------------------------------------------------*/
 void PLL_Configurattion(void);

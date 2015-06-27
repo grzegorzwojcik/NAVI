@@ -22,12 +22,6 @@
 #include "FAULTS.h"
 #include "diskio.h"
 
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Global variables ----------------------------------------------------------*/
-
-
 /* Private functions ---------------------------------------------------------*/
 void PLL_Configurattion(void){
 	RCC_PLLConfig(RCC_PLLSource_HSE_Div1,RCC_PLLMul_9); // 72MHz
@@ -49,17 +43,20 @@ void PLL_Configurattion(void){
 
 void SYSTEM_ClockCheck(void){
 
-	GV_SystemStatus = 0;
+	GV_TimeStart 		= 0;
+	GV_TimeCounter 	= 0;
+	GV_SystemReady		= 0;
 	RCC_ClocksTypeDef ClksFreq;
 	RCC_GetClocksFreq(&ClksFreq);
 
 	if( ClksFreq.SYSCLK_Frequency == 72000000 ){
 		if( ClksFreq.HCLK_Frequency == 72000000 ){
-			GV_SystemStatus = 1;
+			GV_SystemReady = 1;
 		}
 	}
 	else
-		GV_SystemStatus = 0;
+		GV_SystemReady = 0;
+
 }
 
 /*-- Interrupts --------------------------------------------------------------*/
@@ -76,8 +73,30 @@ void SysTick_Handler(void)
 		GV_SystemCounter = 0;
 	}
 
-	if( GV_SystemCounter % 10 != 0)	// execute it every 10 ms
+	if( GV_SystemCounter % 10 == 0)	// execute it every 10 ms
 		disk_timerproc();			// this function is used by the SD card libraries
+
+
+	if( GV_SystemCounter % 1000 == 0 ){	// 1 second has passed
+		NAVI_Struct.TimeSS++;			// increment seconds
+		if( NAVI_Struct.TimeSS >= 60 ){
+			NAVI_Struct.TimeMM++;
+			NAVI_Struct.TimeSS = 0;
+		}
+		if( NAVI_Struct.TimeMM >= 60 ){
+			NAVI_Struct.TimeHH++;
+			NAVI_Struct.TimeMM = 0;
+		}
+		if( NAVI_Struct.TimeHH >= 24 ){
+			NAVI_Struct.TimeHH = 0;
+		}
+
+		if(GV_TimeStart == 1){
+			GV_TimeCounter--;				// decrementing each second
+			if(GV_TimeCounter <= 0)
+				GV_TimeStart = 0;
+		}
+	}
 }
 
 /*		50 Hz control loop		*/
