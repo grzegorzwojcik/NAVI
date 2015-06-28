@@ -37,7 +37,6 @@ void SPI_initSPI(void);
 void SPI_initSD(void);
 
 void SD_initInterrupt_CardDetect(void);
-void SD_initInterrupt_Log(void);
 void SD_createLog(void);
 
 

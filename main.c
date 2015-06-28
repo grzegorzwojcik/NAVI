@@ -67,7 +67,6 @@ int main(void)
 		SysTick_Config(SystemCoreClock/1000);	// SysTick 1 kHZ (1ms interval)
 
 		SD_initInterrupt_CardDetect();
-		SD_initInterrupt_Log();
 
 		while (1)
 		{
@@ -75,24 +74,34 @@ int main(void)
 			if(GV_flag_BTMRX == 1 ){
 				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFOR_LENGTH) == 1 ){
 					CTRL_DataProcess();
+					/*
 					USART_puts(USART1, "Structure updated");
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 					USART_SendData(USART1, 0X0A);
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 					USART_SendData(USART1, 0X0D);
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+					 */
 				}
 				else{
+					/*
 					USART_puts(USART1, "Data frame error");
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 					USART_SendData(USART1, 0X0A);
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 					USART_SendData(USART1, 0X0D);
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+					 */
 				}
 				BTM_ClearBuffor();
 				GV_flag_BTMRX = 0;
 			}
+
+			if( GV_SystemCounter >= 250){
+				if(GV_TimeStart == SET)
+					SD_createLog();
+			}
+
 		}
 	}
 	else

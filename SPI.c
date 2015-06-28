@@ -105,45 +105,6 @@ void SD_initInterrupt_CardDetect(void){
     NVIC_Init(&NVIC_InitStructure);
 }
 
-/*
-* @brief Function Name  : SD_initInterrupt_Log
-* @brief Description    : This functions initializes interrupt for creating and updating DATA LOGs.
-* 							This interrupt is related to the UNUSED PB5 pin.
-* @param data           : None
-*/
-void SD_initInterrupt_Log(void){
-
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	EXTI_InitTypeDef EXTI_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-
-	/* Enable the GPIOC Clock */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-
-	/* Configure the GPIO pin */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	/* Connect Button EXTI Line to Button GPIO Pin */
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource3);
-
-	/* Configure Button EXTI line */
-	EXTI_InitStructure.EXTI_Line = EXTI_Line3;
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);
-
-    /* Enable and set Button EXTI Interrupt to the lowest priority */
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI3_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-}
 
 /*
 * @brief Function Name  : SD_createLog
@@ -223,15 +184,15 @@ void SD_createLog(void){
 				break;
 		}
 	}
+
 	else{
 		if(GV_TimeStart == SET){		//Save data to the SD CARD
 			if(GV_SDdetected == SET){
 				static DWORD offset = 0;
 				fresult = f_open(&plik, final_path, FA_WRITE);
 				fresult = f_lseek(&plik, offset);
-				//fresult = f_write(&plik, "\r\n23:15:45, Y=34, P=50, Y=180, Alt=", 15, &zapisanych_bajtow);
-				fresult = f_write(&plik, "\r\nData", 15, &zapisanych_bajtow);
-				offset += 15;
+				fresult = f_write(&plik, "\r\n23:15:45, Y=34, P=50, Y=180, Alt=1500mm, \r\n23:15:45, Y=34, P=50, Y=180, Alt=1500mm,", 90, &zapisanych_bajtow);
+				offset += 90;
 				fresult = f_close (&plik);
 			}
 		}
@@ -250,22 +211,10 @@ void EXTI9_5_IRQHandler(void){
 	  {
 	    if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == RESET ){
 	    	GV_SDdetected = SET;
-			EXTI_GenerateSWInterrupt(EXTI_Line3);
 	    }
 	    else
 	    	GV_SDdetected = RESET;
 	    /* Clear the EXTI line 0 pending bit */
 	  }
 	  EXTI_ClearITPendingBit(EXTI_Line5);
-}
-
-
-/*
-* @brief Function Name  : EXTI3_IRQHandler
-* @brief Description    : SD card create log interrupt handler (PC3/EXTI3)
-* @param data           : None
-*/
-void EXTI3_IRQHandler(void){
-
-	EXTI_ClearITPendingBit(EXTI_Line3);
 }
