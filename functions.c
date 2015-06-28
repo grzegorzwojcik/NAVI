@@ -43,8 +43,8 @@ void PLL_Configurattion(void){
 
 void SYSTEM_ClockCheck(void){
 
-	GV_TimeStart 		= 0;
-	GV_TimeCounter 	= 0;
+	GV_TimeStart 		= RESET;
+	GV_TimeCounter 		= 0;
 	GV_SystemReady		= 0;
 	RCC_ClocksTypeDef ClksFreq;
 	RCC_GetClocksFreq(&ClksFreq);
@@ -91,10 +91,13 @@ void SysTick_Handler(void)
 			NAVI_Struct.TimeHH = 0;
 		}
 
-		if(GV_TimeStart == 1){
-			GV_TimeCounter--;				// decrementing each second
-			if(GV_TimeCounter <= 0)
-				GV_TimeStart = 0;
+		if(GV_TimeStart == SET){
+			if(--GV_TimeCounter <= 0){		// decrementing each second
+				GV_TimeStart = RESET;
+				GV_SDfileCreated = RESET;
+			}
+			if(GV_SystemCounter % 250 == 0)	// create interrupt every 250ms = store new data to the SD card
+				EXTI_GenerateSWInterrupt(EXTI_Line3);
 		}
 	}
 }
@@ -104,13 +107,15 @@ void TIM2_IRQHandler(void){
 	if( TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET ){
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 
-		if(NAVI_Struct.FaultM == 1)
+		if(NAVI_Struct.FaultM == 1){
 			FAULTS_injectSERVO();
+		}
+
 		if(NAVI_Struct.FaultM == 0)
 			//FAULTS_removalSERVO();
 			TIM2->CCR3 = 20;
 
-		CTRL_controlAUTOPILOT(0, 100, 65, 200);
+		CTRL_controlAUTOPILOT(0, 100, 115, 175);
 	}
 }
 

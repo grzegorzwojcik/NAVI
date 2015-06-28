@@ -41,7 +41,7 @@ void SPI_initSPI(void){
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
+	SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
 	SPI_InitStructure.SPI_CRCPolynomial = 7;
 	SPI_Init(SPI1, &SPI_InitStructure);
@@ -56,6 +56,12 @@ void SPI_initSPI(void){
 */
 void SPI_initSD(void){
 	power_on();
+	GV_SDfileCreated 	= RESET;
+
+    if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == RESET )
+    	GV_SDdetected = SET;		// Card present
+    else
+    	GV_SDdetected = RESET;		// Card absent
 }
 
 /*
@@ -147,7 +153,7 @@ void SD_initInterrupt_Log(void){
 * 							where x is new data log file.
 * @param data           : None
 */
-char* SD_createLog(void){
+void SD_createLog(void){
 	FRESULT fresult;
 	FIL plik;
 	UINT zapisanych_bajtow;
@@ -156,78 +162,82 @@ char* SD_createLog(void){
 	FILINFO fileInfo;
 
 	static char mainFolder[7] = "AI-METH";	//Main folder name [SD card]
-	static char path[40] = {0};
-	static char* final_path = {0};
+	static char final_path[40] = {0};
 
-	f_mount(0, &g_sFatFs);		//Mount drive 0 [SD card]
+	if(GV_SDfileCreated != SET){
+		static char path[40] = {0};
+		f_mount(0, &g_sFatFs);		//Mount drive 0 [SD card]
+		sprintf(path, "%s", mainFolder);
+		fresult = f_stat(path, &fileInfo);			// Checking directory
 
-	sprintf(path, "%s", mainFolder);
-	fresult = f_stat(path, &fileInfo);			// Checking directory
+		switch (fresult) {
+			case FR_NO_FILE:						// Create if main folder is not present
+				f_mkdir(mainFolder);
 
-	switch (fresult) {
-		case FR_NO_FILE:						// Create if main folder is not present
-			f_mkdir(mainFolder);
+			case FR_OK:								// Proceed further if it is
+				/*	Create path for first subfolder (Name = YYYY)	*/
+				sprintf(path, "%s/%i", mainFolder, NAVI_Struct.DateYYYY);
+				fresult = f_stat(path, &fileInfo);	//Check whether it already exists
+				if( fresult == FR_NO_FILE )
+					f_mkdir(path);
 
-		case FR_OK:								// Proceed further if it is
-			//Create path for first subfolder (Name = YYYY)
-			sprintf(path, "%s/%i", mainFolder, NAVI_Struct.DateYYYY);
-			fresult = f_stat(path, &fileInfo);	//Check whether it already exists
-			if( fresult == FR_NO_FILE )
-				f_mkdir(path);
-
-			//Create path for second subfolder (Name = MM-DD)
-			if(NAVI_Struct.DateMM < 10){
-				if( NAVI_Struct.DateDD < 10 )
-					sprintf(path, "%s/0%i-0%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
-				else
-					sprintf(path, "%s/0%i-%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
-			}
-			else{
-				if( NAVI_Struct.DateDD < 10 )
-					sprintf(path, "%s/%i-0%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
-				else
-					sprintf(path, "%s/%i-%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
-			}
-
-			fresult = f_stat(path, &fileInfo);	//Check whether it already exists
-			if( fresult == FR_NO_FILE )
-				fresult = f_mkdir(path);
-
-			/* CREATING .TXT FILE and CHECKING WHETHER PREVIOUS EXIST */
-			static uint8_t FileCounter = 0;
-			for( FileCounter = 0; FileCounter < 100; FileCounter++){
-				char path_tmp[40] = {0};
-				sprintf(path_tmp, "%s/FLIGHT%i.txt", path ,FileCounter);
-
-				if (f_stat(path_tmp, &fileInfo) == FR_NO_FILE){
-					fresult = f_open(&plik,path_tmp, FA_CREATE_ALWAYS | FA_WRITE);	//Create file and allow writing to it
-					fresult = f_close (&plik);
-					final_path = path_tmp;
-					break;
+				/*	Create path for second subfolder (Name = MM-DD)	*/
+				//We want format MM-DD not M-D, i.e. 06-26, instead of 6-26
+				if(NAVI_Struct.DateMM < 10){
+					if( NAVI_Struct.DateDD < 10 )
+						sprintf(path, "%s/0%i-0%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+					else
+						sprintf(path, "%s/0%i-%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
 				}
-			}
-			break;
-		default:
-			break;
+				/*	We want format MM-DD not M-D, i.e. 12-09 instead of 12-9	*/
+				else{
+					if( NAVI_Struct.DateDD < 10 )
+						sprintf(path, "%s/%i-0%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+					else
+						sprintf(path, "%s/%i-%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
+				}
+
+				fresult = f_stat(path, &fileInfo);	//Check whether it already exists
+				if( fresult == FR_NO_FILE )
+					fresult = f_mkdir(path);
+
+				/* CREATING .TXT FILE and CHECKING WHETHER PREVIOUS EXIST */
+				static uint8_t FileCounter = 0;
+				for( FileCounter = 0; FileCounter < 100; FileCounter++){
+					char path_tmp[40] = {0};
+					sprintf(path_tmp, "%s/FLIGHT%i.txt", path ,FileCounter);
+
+					if (f_stat(path_tmp, &fileInfo) == FR_NO_FILE){
+						fresult = f_open(&plik,path_tmp, FA_CREATE_ALWAYS | FA_WRITE);	//Create file and allow writing to it
+
+						if( fresult == FR_OK )
+							GV_SDfileCreated = SET;	// File succesfully created.
+
+						fresult = f_close (&plik);
+						sprintf(final_path, "%s", path_tmp);
+						break;
+					}
+				}
+				break;
+			default:
+				break;
+		}
 	}
-
-	return final_path;
+	else{
+		if(GV_TimeStart == SET){		//Save data to the SD CARD
+			if(GV_SDdetected == SET){
+				static DWORD offset = 0;
+				fresult = f_open(&plik, final_path, FA_WRITE);
+				fresult = f_lseek(&plik, offset);
+				//fresult = f_write(&plik, "\r\n23:15:45, Y=34, P=50, Y=180, Alt=", 15, &zapisanych_bajtow);
+				fresult = f_write(&plik, "\r\nData", 15, &zapisanych_bajtow);
+				offset += 15;
+				fresult = f_close (&plik);
+			}
+		}
+	}
 }
 
-void SD_updateLog(char* path){
-	FRESULT fresult;
-	FIL plik;
-	UINT zapisanych_bajtow;
-	FATFS g_sFatFs;
-	DIR directory;
-	FILINFO fileInfo;
-
-
-	fresult = f_open(&plik,path, FA_WRITE);	//Create file and allow writing to it
-	fresult = f_write(&plik, "zawartosc pliku \n", 15, &zapisanych_bajtow);
-	fresult = f_write(&plik, "zawartosc pliku \n asdasd ", 15, &zapisanych_bajtow);
-	fresult = f_close (&plik);
-}
 
 /*
 * @brief Function Name  : EXTI9_5_IRQHandler
@@ -239,11 +249,11 @@ void EXTI9_5_IRQHandler(void){
 	  if(EXTI_GetITStatus(EXTI_Line5) != RESET)		//SD card detect interrupt handler (PC5/EXTI5)
 	  {
 	    if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == RESET ){
-	    	GV_SDdetected = 1;
+	    	GV_SDdetected = SET;
 			EXTI_GenerateSWInterrupt(EXTI_Line3);
 	    }
 	    else
-	    	GV_SDdetected = 0;
+	    	GV_SDdetected = RESET;
 	    /* Clear the EXTI line 0 pending bit */
 	  }
 	  EXTI_ClearITPendingBit(EXTI_Line5);
@@ -257,8 +267,5 @@ void EXTI9_5_IRQHandler(void){
 */
 void EXTI3_IRQHandler(void){
 
-	if(GV_SDdetected == 1){
-		SD_createLog();
-	}
 	EXTI_ClearITPendingBit(EXTI_Line3);
 }

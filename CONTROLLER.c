@@ -11,12 +11,13 @@
 
 #include "CONTROLLER.h"
 #include "BTM.h"
+#include "functions.h"
 
 
 void CTRL_initNaviStruct(void){
 	NAVI_Struct.NAVIGATOR_CH1 = 50;		//Elevator-Pitch
 	NAVI_Struct.NAVIGATOR_CH2 = 50;		//Aileron-Roll
-	NAVI_Struct.NAVIGATOR_CH3 = 5;		//Throttle-Altitude
+	NAVI_Struct.NAVIGATOR_CH3 = 0;		//Throttle-Altitude
 	NAVI_Struct.NAVIGATOR_CH4 = 50;		//Rudder-Yaw
 
 	NAVI_Struct.RC_CH1 		= 0;		//Elevator-Pitch
@@ -197,6 +198,10 @@ void CTRL_DataProcess(void){
 			NAVI_Struct.FaultM = atoi(DATA2);
 			NAVI_Struct.FaultC = atoi(DATA3);
 			NAVI_Struct.FaultTime = atoi(DATA4);
+			if(NAVI_Struct.FaultTime > 0){
+				GV_TimeCounter = NAVI_Struct.FaultTime + 30;
+				GV_TimeStart = 1;
+			}
 			break;
 		case 6:			// Data frame is related to the current DATA sent, via Bluetooth, by external device
 			NAVI_Struct.DateYYYY = atoi(DATA1);

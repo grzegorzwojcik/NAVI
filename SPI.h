@@ -28,7 +28,8 @@
 #define	SD_GPIO2	GPIOC
 
 /* Global variables ----------------------------------------------------------*/
-volatile uint8_t GV_SDdetected;		//1 = detected, 0 = not detected
+volatile uint8_t GV_SDdetected;		//SET = detected, RESET = not detected
+volatile uint8_t GV_SDfileCreated;	//SET = created, RESET = not created
 
 void SPI_initRCC(void);
 void SPI_initGPIO(void);
@@ -37,8 +38,7 @@ void SPI_initSD(void);
 
 void SD_initInterrupt_CardDetect(void);
 void SD_initInterrupt_Log(void);
-char* SD_createLog(void);
-void SD_updateLog(char* path);
+void SD_createLog(void);
 
 
 #endif /* SPI_H_ */
