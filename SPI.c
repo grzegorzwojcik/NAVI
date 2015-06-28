@@ -49,11 +49,22 @@ void SPI_initSPI(void){
 	SPI_Cmd(SPI1, ENABLE);
 }
 
+/*
+* @brief Function Name  : SPI_initSD
+* @brief Description    : This functions initializes SD card with proper CMD commands.
+* @param data           : None
+*/
 void SPI_initSD(void){
 	power_on();
 }
 
-void SD_initCardDetect(void){
+/*
+* @brief Function Name  : SD_initInterrupt_CardDetect
+* @brief Description    : This functions initializes SD card detect interrupt handler. When card is detected,
+* 							an event is set by software to create and update data logs.
+* @param data           : None
+*/
+void SD_initInterrupt_CardDetect(void){
 
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStructure;
@@ -63,7 +74,7 @@ void SD_initCardDetect(void){
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
 
-	/* Configure the GPIO_LED pin */
+	/* Configure the GPIO pin */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -83,23 +94,70 @@ void SD_initCardDetect(void){
     /* Enable and set Button EXTI Interrupt to the lowest priority */
     NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
 }
 
+/*
+* @brief Function Name  : SD_initInterrupt_Log
+* @brief Description    : This functions initializes interrupt for creating and updating DATA LOGs.
+* 							This interrupt is related to the UNUSED PB5 pin.
+* @param data           : None
+*/
+void SD_initInterrupt_Log(void){
 
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
 
-void SD_createLog(void){
+	/* Enable the GPIOC Clock */
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+	/* Configure the GPIO pin */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+	/* Connect Button EXTI Line to Button GPIO Pin */
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource3);
+
+	/* Configure Button EXTI line */
+	EXTI_InitStructure.EXTI_Line = EXTI_Line3;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+
+    /* Enable and set Button EXTI Interrupt to the lowest priority */
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI3_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+}
+
+/*
+* @brief Function Name  : SD_createLog
+* @brief Description    : This functions is creating log on the SD card. Main directory is set by variable mainFolder,
+* 							and the sub-directories are related to the current Date set in Navi_Struct, i.e.
+* 							"mainFolder/NAVI_Struct.DateYYYY/NAVI_Struct.DateMM-NAVI_Struct.DateDD/Flightx"
+* 							where x is new data log file.
+* @param data           : None
+*/
+char* SD_createLog(void){
 	FRESULT fresult;
 	FIL plik;
-	WORD zapisanych_bajtow;
+	UINT zapisanych_bajtow;
 	FATFS g_sFatFs;
 	//DIR directory;
 	FILINFO fileInfo;
 
 	static char mainFolder[7] = "AI-METH";	//Main folder name [SD card]
 	static char path[40] = {0};
+	static char* final_path = {0};
 
 	f_mount(0, &g_sFatFs);		//Mount drive 0 [SD card]
 
@@ -135,14 +193,16 @@ void SD_createLog(void){
 			if( fresult == FR_NO_FILE )
 				fresult = f_mkdir(path);
 
+			/* CREATING .TXT FILE and CHECKING WHETHER PREVIOUS EXIST */
 			static uint8_t FileCounter = 0;
 			for( FileCounter = 0; FileCounter < 100; FileCounter++){
 				char path_tmp[40] = {0};
-				sprintf(path_tmp, "%s/Flight%i.txt", path ,FileCounter);
+				sprintf(path_tmp, "%s/FLIGHT%i.txt", path ,FileCounter);
 
 				if (f_stat(path_tmp, &fileInfo) == FR_NO_FILE){
 					fresult = f_open(&plik,path_tmp, FA_CREATE_ALWAYS | FA_WRITE);	//Create file and allow writing to it
 					fresult = f_close (&plik);
+					final_path = path_tmp;
 					break;
 				}
 			}
@@ -150,8 +210,24 @@ void SD_createLog(void){
 		default:
 			break;
 	}
+
+	return final_path;
 }
 
+void SD_updateLog(char* path){
+	FRESULT fresult;
+	FIL plik;
+	UINT zapisanych_bajtow;
+	FATFS g_sFatFs;
+	DIR directory;
+	FILINFO fileInfo;
+
+
+	fresult = f_open(&plik,path, FA_WRITE);	//Create file and allow writing to it
+	fresult = f_write(&plik, "zawartosc pliku \n", 15, &zapisanych_bajtow);
+	fresult = f_write(&plik, "zawartosc pliku \n asdasd ", 15, &zapisanych_bajtow);
+	fresult = f_close (&plik);
+}
 
 /*
 * @brief Function Name  : EXTI9_5_IRQHandler
@@ -164,11 +240,25 @@ void EXTI9_5_IRQHandler(void){
 	  {
 	    if( GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == RESET ){
 	    	GV_SDdetected = 1;
-	    	SD_createLog();
+			EXTI_GenerateSWInterrupt(EXTI_Line3);
 	    }
 	    else
 	    	GV_SDdetected = 0;
 	    /* Clear the EXTI line 0 pending bit */
-	    EXTI_ClearITPendingBit(EXTI_Line5);
 	  }
+	  EXTI_ClearITPendingBit(EXTI_Line5);
+}
+
+
+/*
+* @brief Function Name  : EXTI3_IRQHandler
+* @brief Description    : SD card create log interrupt handler (PC3/EXTI3)
+* @param data           : None
+*/
+void EXTI3_IRQHandler(void){
+
+	if(GV_SDdetected == 1){
+		SD_createLog();
+	}
+	EXTI_ClearITPendingBit(EXTI_Line3);
 }
