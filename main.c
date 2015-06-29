@@ -97,7 +97,7 @@ int main(void)
 				GV_flag_BTMRX = 0;
 			}
 
-			if( GV_SystemCounter % 250 == 0){
+			if( GV_SystemCounter % 250 == 0){		//Update log every 250ms
 				if(GV_TimeStart == SET)
 					SD_createLog();
 			}

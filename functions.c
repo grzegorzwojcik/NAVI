@@ -96,8 +96,6 @@ void SysTick_Handler(void)
 				GV_TimeStart = RESET;
 				GV_SDfileCreated = RESET;
 			}
-			if(GV_SystemCounter % 250 == 0)	// create interrupt every 250ms = store new data to the SD card
-				EXTI_GenerateSWInterrupt(EXTI_Line3);
 		}
 	}
 }
