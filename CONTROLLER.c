@@ -189,9 +189,9 @@ void CTRL_DataProcess(void){
 	switch (tmp){
 		case 1:				// Data frame is related to the QUADRO CONTROL
 			NAVI_Struct.NAVIGATOR_CH1 = atoi(DATA1);
-			NAVI_Struct.NAVIGATOR_CH2 = atoi(DATA2);
+			NAVI_Struct.NAVIGATOR_CH2 = 100 - atoi(DATA2);
 			NAVI_Struct.NAVIGATOR_CH3 = atoi(DATA3);
-			NAVI_Struct.NAVIGATOR_CH4 = atoi(DATA4);
+			NAVI_Struct.NAVIGATOR_CH4 = 100 - atoi(DATA4);
 			break;
 		case 2:				// Data frame is related to the FAULT INJECTION AND REMOVAL
 			NAVI_Struct.FaultE = atoi(DATA1);
@@ -199,7 +199,7 @@ void CTRL_DataProcess(void){
 			NAVI_Struct.FaultC = atoi(DATA3);
 			NAVI_Struct.FaultTime = atoi(DATA4);
 			if(NAVI_Struct.FaultTime > 0){
-				GV_TimeCounter = NAVI_Struct.FaultTime + 30;
+				GV_TimeCounter = NAVI_Struct.FaultTime/1000 + 30;
 				GV_TimeStart = 1;
 			}
 			break;
