@@ -18,6 +18,7 @@
 #include "stm32f10x.h"
 
 #include "functions.h"
+#include "AUTOPILOT.h"
 #include "BTM.h"
 #include "CONTROLLER.h"
 #include "FAULTS.h"
@@ -43,11 +44,17 @@ int main(void)
 	NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(2,2,0));
 	NVIC_SetPriority(USART1_IRQn, NVIC_EncodePriority(2,1,2));
 
-
+	/* Wireless communication via Bluetooth with a Tablet/PC */
 	BTM_initRCC();
 	BTM_initGPIO();
 	BTM_initUART();
-	BTM_ClearBuffor();
+	BTM_ClearBuffer();
+
+	/* On-board communication with Autopilot Board */
+	AP_initRCC();
+	AP_initGPIO();
+	AP_initUART();
+	AP_ClearBuffer();
 
 	/* Enter infinite loop only when clock frequencies are OK */
 	if( GV_SystemReady == 1 ){
@@ -73,7 +80,7 @@ int main(void)
 		{
 
 			if(GV_flag_BTMRX == 1 ){
-				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFOR_LENGTH) == 1 ){
+				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFER_LENGTH) == 1 ){
 					CTRL_DataProcess();
 					/*
 					USART_puts(USART1, "Structure updated");
@@ -94,13 +101,20 @@ int main(void)
 					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 					 */
 				}
-				BTM_ClearBuffor();
+				BTM_ClearBuffer();
 				GV_flag_BTMRX = 0;
 			}
 
 			if( GV_SystemCounter % 250 == 0){		//Update log every 250ms
 				if(GV_TimeStart == SET)
 					SD_createLog();
+			}
+
+
+			if(GV_flag_APRX == 1 )
+			{
+				AP_ClearBuffer();
+				GV_flag_APRX = 0;
 			}
 
 		}

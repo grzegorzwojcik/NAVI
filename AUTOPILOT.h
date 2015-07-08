@@ -1,12 +1,12 @@
 /*
- * BTM.h
+ * AUTOPILOT.h
  *
- *  Created on: Jun 7, 2015
+ *  Created on: Jul 8, 2015
  *      Author: Grzegorz WÓJCIK
  */
 
-#ifndef BTM_H_
-#define BTM_H_
+#ifndef AUTOPILOT_H_
+#define AUTOPILOT_H_
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -14,26 +14,26 @@
 #include "functions.h"
 
 /*** PREDEFINED SETTINGS	***/
-#define BTM_PORT 			GPIOA
-#define BTM_USART1_TX		GPIO_Pin_9
-#define BTM_USART1_RX		GPIO_Pin_10
-#define BTM_BUFFER_LENGTH	30
-#define BTM_DF_CHAR			'#'		// Data frame starting character
+#define AP_PORT 			GPIOA
+#define AP_USART2_TX		GPIO_Pin_2
+#define AP_USART2_RX		GPIO_Pin_3
+#define AP_BUFFER_LENGTH	30
+#define AP_DF_CHAR			'#'		// Data frame starting character
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Global variables ----------------------------------------------------------*/
-volatile unsigned char GV_bufferBTM[BTM_BUFFER_LENGTH];
-volatile unsigned char GV_flag_BTMRX;
-volatile unsigned char GV_flag_BTMTX;
+volatile unsigned char GV_bufferAP[AP_BUFFER_LENGTH];
+volatile unsigned char GV_flag_APRX;
+volatile unsigned char GV_flag_APTX;
 
 /* Private functions ---------------------------------------------------------*/
-void BTM_initRCC(void);
-void BTM_initGPIO(void);
-void BTM_initUART(void);
-void BTM_ClearBuffer(void);
+void AP_initRCC(void);
+void AP_initGPIO(void);
+void AP_initUART(void);
+void AP_ClearBuffer(void);
 void USART_puts(USART_TypeDef* USARTx, volatile char *s);
-uint8_t BTM_checkCRC(char StartChar, uint8_t Length);
+uint8_t AP_checkCRC(char StartChar, uint8_t Length);
 
-#endif /* BTM_H_ */
+#endif /* AUTOPILOT_H_ */

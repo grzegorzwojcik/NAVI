@@ -113,11 +113,11 @@ void CTRL_initTIM(void){
 
 /*
 * @brief Function Name  	: CTRL_DataProcess
-* @brief Description    	: This function processes the GV_bufforBTM data frame and completes
+* @brief Description    	: This function processes the GV_bufferBTM data frame and completes
 * 								structure elements that are related to it.
 * @return 					: None
 *
-* @INFO						: this function uses global variable GV_bufforBTM[]
+* @INFO						: this function uses global variable GV_bufferBTM[]
 */
 void CTRL_DataProcess(void){
 	/* Sample frames:
@@ -144,43 +144,43 @@ void CTRL_DataProcess(void){
 
 
 	for( i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, CommaCounter = 0,
-			StartProcessingFlag = 0; i < BTM_BUFFOR_LENGTH ; i++ ){
+			StartProcessingFlag = 0; i < BTM_BUFFER_LENGTH ; i++ ){
 		if( StartProcessingFlag == 1 ){
 
-			if( GV_bufforBTM[i] == '\r')
+			if( GV_bufferBTM[i] == '\r')
 				break;
 
-			if(GV_bufforBTM[i] == ',')		//increment counter when ',' is detected
+			if(GV_bufferBTM[i] == ',')		//increment counter when ',' is detected
 				CommaCounter++;
 
 			/* Parse FRAME byte */
-			if( (CommaCounter == 1) && (GV_bufforBTM[i] != ',') ){
-				FRAME[j] = GV_bufforBTM[i];
+			if( (CommaCounter == 1) && (GV_bufferBTM[i] != ',') ){
+				FRAME[j] = GV_bufferBTM[i];
 				j++;
 			}
 			/* Parse DATA1 bytes */
-			else if( CommaCounter == 2 && (GV_bufforBTM[i] != ',')  ){
-				DATA1[k] = GV_bufforBTM[i];
+			else if( CommaCounter == 2 && (GV_bufferBTM[i] != ',')  ){
+				DATA1[k] = GV_bufferBTM[i];
 				k++;
 			}
 			/* Parse DATA2 bytes */
-			else if( CommaCounter == 3 && (GV_bufforBTM[i] != ',') ){
-				DATA2[l] = GV_bufforBTM[i];
+			else if( CommaCounter == 3 && (GV_bufferBTM[i] != ',') ){
+				DATA2[l] = GV_bufferBTM[i];
 				l++;
 			}
 			/* Parse DATA3 bytes */
-			else if( CommaCounter == 4 && (GV_bufforBTM[i] != ',') ){
-				DATA3[m] = GV_bufforBTM[i];
+			else if( CommaCounter == 4 && (GV_bufferBTM[i] != ',') ){
+				DATA3[m] = GV_bufferBTM[i];
 				m++;
 			}
 			/* Parse DATA4 bytes */
-			else if( CommaCounter == 5 && (GV_bufforBTM[i] != ',') ){
-				DATA4[n] = GV_bufforBTM[i];
+			else if( CommaCounter == 5 && (GV_bufferBTM[i] != ',') ){
+				DATA4[n] = GV_bufferBTM[i];
 				n++;
 			}
 		}
 
-		if( GV_bufforBTM[i] == '#')	//set flag to 1 when first ',' is detected
+		if( GV_bufferBTM[i] == '#')	//set flag to 1 when first ',' is detected
 			StartProcessingFlag = 1;
 	}
 
