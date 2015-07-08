@@ -82,14 +82,6 @@ int main(void)
 			if(GV_flag_BTMRX == 1 ){
 				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFER_LENGTH) == 1 ){
 					CTRL_DataProcess();
-					/*
-					USART_puts(USART1, "Structure updated");
-					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-					USART_SendData(USART1, 0X0A);
-					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-					USART_SendData(USART1, 0X0D);
-					while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
-					 */
 				}
 				else{
 					/*
@@ -111,8 +103,10 @@ int main(void)
 			}
 
 
-			if(GV_flag_APRX == 1 )
+			if( (GV_flag_APRX == 1) && (GV_SystemCounter % 100 == 0) )
 			{
+				USART_puts(USART1, GV_bufferAP);
+				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				AP_ClearBuffer();
 				GV_flag_APRX = 0;
 			}
