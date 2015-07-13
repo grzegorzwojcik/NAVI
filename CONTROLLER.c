@@ -42,6 +42,13 @@ void CTRL_initNaviStruct(void){
 	NAVI_Struct.TimeMM	= 00;
 	NAVI_Struct.TimeSS	= 05;
 
+	NAVI_Struct.Voltage		= 0;
+	NAVI_Struct.IR_distance	= 0;
+
+	NAVI_Struct.Yaw 	= 0;
+	NAVI_Struct.Pitch	= 0;
+	NAVI_Struct.Roll	= 0;
+	NAVI_Struct.Gyro_Z	= 0;
 }
 
 void CTRL_initNAVI_RCC(void){
@@ -219,6 +226,16 @@ void CTRL_DataProcess(CTRLsource_t CTRL_source_device){
 				GV_TimeCounter = NAVI_Struct.FaultTime/1000 + 30;
 				GV_TimeStart = 1;
 			}
+			break;
+		case 3:				// Data frame is related to the SENSOR BOARD Euler angles & Z angular velocity measurements
+			NAVI_Struct.Yaw = atoi(DATA1);
+			NAVI_Struct.Pitch = atoi(DATA2);
+			NAVI_Struct.Roll = atoi(DATA3);
+			NAVI_Struct.Gyro_Z = atoi(DATA4);
+			break;
+		case 4:				// Data frame is related to the SENSOR BOARD ADC voltage & sonar measurements
+			NAVI_Struct.Voltage = atoi(DATA1);
+			NAVI_Struct.IR_distance = atoi(DATA2);
 			break;
 		case 6:			// Data frame is related to the current DATA sent, via Bluetooth, by external device
 			NAVI_Struct.DateYYYY = atoi(DATA1);

@@ -56,6 +56,13 @@ typedef struct{
 		uint8_t TimeHH;			//Hour e.g. 12
 		uint8_t TimeMM;			//Minutes e.g. 00
 		uint8_t TimeSS;			//Seconds e.g. 00
+
+		uint16_t Voltage;		//Measured by sensor board power supply voltage [mV]
+		uint16_t IR_distance;	//Measured by sensor board SHARP distance 		[mV]
+		int16_t Yaw;			//Measured by sensor board Yaw angle 	[°]
+		int16_t Pitch;			//Measured by sensor board Pitch angle 	[°]
+		int16_t Roll;			//Measured by sensor board Roll angle 	[°]
+		int16_t Gyro_Z;			//Measured by sensor board angular velocity around Z axis [°/s]
 }NAVI;
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
