@@ -80,7 +80,7 @@ int main(void)
 		{
 
 			if(GV_flag_BTMRX == 1 ){
-				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFER_LENGTH) == 1 ){
+				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFER_LENGTH) != RESET ){
 						CTRL_DataProcess(CTRL_source_MobileDevice);
 				}
 				else{
@@ -105,11 +105,9 @@ int main(void)
 
 			if( ( GV_flag_APRX == 1 ) && ( GV_SystemCounter % 20 == 0 ) )
 			{
-				/*uint8_t tmp = 0;
-				for(tmp = 0; tmp < AP_BUFFER_LENGTH; tmp++)
-				{
-					GV_bufferAP[tmp] = GV_bufferAP[tmp+1];
-				}*/
+				if( AP_checkCRC(AP_DF_CHAR, AP_BUFFER_LENGTH) != RESET ){
+						CTRL_DataProcess(CTRL_source_Autopilot);
+				}
 				USART_puts( USART1, GV_bufferAP );
 				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				AP_ClearBuffer();

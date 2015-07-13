@@ -112,13 +112,12 @@ uint8_t BTM_calculateCRC(char StartChar, uint8_t Length){
 * @INFO						: this function uses global variable GV_bufferBTM[]
 */
 
-uint8_t BTM_checkCRC(char StartChar, uint8_t Length){
+FlagStatus BTM_checkCRC(char StartChar, uint8_t Length){
 	static uint8_t XOR = 0;					// calculated checksum
 	static uint8_t i = 0, j = 0, tmp = 0;
 	char checksum[4] = {0};					// received checksum
-	static uint8_t status = 0;				// 0 - CRCs do not match, 1 - CRCs match
 
-	for( XOR = 0, i = 0, j = 0, tmp = 0, status = 0; i < Length; i++ ){
+	for( XOR = 0, i = 0, j = 0, tmp = 0; i < Length; i++ ){
 		if( tmp == 1 ){
 			checksum[j] = GV_bufferBTM[i];
 			j++;
@@ -133,10 +132,9 @@ uint8_t BTM_checkCRC(char StartChar, uint8_t Length){
 
 	/* 0 - CRCs do not match, 1 - CRCs match */
 	if(atoi(checksum) == XOR)
-		status = 1;
+		return SET;
 	else
-		status = 0;
-	return status;
+		return RESET;
 }
 
 void USART1_IRQHandler(void){
