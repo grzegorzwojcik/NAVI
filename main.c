@@ -81,7 +81,7 @@ int main(void)
 
 			if(GV_flag_BTMRX == 1 ){
 				if( BTM_checkCRC(BTM_DF_CHAR, BTM_BUFFER_LENGTH) == 1 ){
-					CTRL_DataProcess();
+						CTRL_DataProcess(CTRL_source_MobileDevice);
 				}
 				else{
 					/*
@@ -103,9 +103,14 @@ int main(void)
 			}
 
 
-			if( (GV_flag_APRX == 1) && (GV_SystemCounter % 100 == 0) )
+			if( ( GV_flag_APRX == 1 ) && ( GV_SystemCounter % 20 == 0 ) )
 			{
-				USART_puts(USART1, GV_bufferAP);
+				/*uint8_t tmp = 0;
+				for(tmp = 0; tmp < AP_BUFFER_LENGTH; tmp++)
+				{
+					GV_bufferAP[tmp] = GV_bufferAP[tmp+1];
+				}*/
+				USART_puts( USART1, GV_bufferAP );
 				while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
 				AP_ClearBuffer();
 				GV_flag_APRX = 0;

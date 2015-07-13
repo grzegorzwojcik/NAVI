@@ -10,6 +10,7 @@
 #include "stm32f10x.h"
 
 #include "CONTROLLER.h"
+#include "AUTOPILOT.h"
 #include "BTM.h"
 #include "functions.h"
 
@@ -119,7 +120,7 @@ void CTRL_initTIM(void){
 *
 * @INFO						: this function uses global variable GV_bufferBTM[]
 */
-void CTRL_DataProcess(void){
+void CTRL_DataProcess(CTRLsource_t CTRL_source_device){
 	/* Sample frames:
 	 	#,1,44,33,22,11,*CRC,0x0A0x0D
 	 	#,1,50,50,66,33,*49,
@@ -127,6 +128,22 @@ void CTRL_DataProcess(void){
 		#,6,15:25:06,16:43:15,0,0,*55
 		#,2,0,0,0,5000,*7
 	 */
+	unsigned char tmp_buffer[30] = {0};
+
+	switch (CTRL_source_device) {
+	uint8_t cnt = 0;
+		case CTRL_source_Autopilot:
+			for(cnt = 0; cnt <= AP_BUFFER_LENGTH; cnt++)
+				tmp_buffer[cnt] = GV_bufferAP[cnt];
+			break;
+
+		case CTRL_source_MobileDevice:
+			for(cnt = 0; cnt <= BTM_BUFFER_LENGTH; cnt++)
+				tmp_buffer[cnt] = GV_bufferBTM[cnt];
+			break;
+	}
+
+
 	static uint8_t CommaCounter;
 	static uint8_t i;
 	static uint8_t j;	//FRAME index counter
@@ -147,40 +164,40 @@ void CTRL_DataProcess(void){
 			StartProcessingFlag = 0; i < BTM_BUFFER_LENGTH ; i++ ){
 		if( StartProcessingFlag == 1 ){
 
-			if( GV_bufferBTM[i] == '\r')
+			if( tmp_buffer[i] == '\r')
 				break;
 
-			if(GV_bufferBTM[i] == ',')		//increment counter when ',' is detected
+			if( tmp_buffer[i] == ',')		//increment counter when ',' is detected
 				CommaCounter++;
 
 			/* Parse FRAME byte */
-			if( (CommaCounter == 1) && (GV_bufferBTM[i] != ',') ){
-				FRAME[j] = GV_bufferBTM[i];
+			if( (CommaCounter == 1) && (tmp_buffer[i] != ',') ){
+				FRAME[j] = tmp_buffer[i];
 				j++;
 			}
 			/* Parse DATA1 bytes */
-			else if( CommaCounter == 2 && (GV_bufferBTM[i] != ',')  ){
-				DATA1[k] = GV_bufferBTM[i];
+			else if( CommaCounter == 2 && (tmp_buffer[i] != ',')  ){
+				DATA1[k] = tmp_buffer[i];
 				k++;
 			}
 			/* Parse DATA2 bytes */
-			else if( CommaCounter == 3 && (GV_bufferBTM[i] != ',') ){
-				DATA2[l] = GV_bufferBTM[i];
+			else if( CommaCounter == 3 && (tmp_buffer[i] != ',') ){
+				DATA2[l] = tmp_buffer[i];
 				l++;
 			}
 			/* Parse DATA3 bytes */
-			else if( CommaCounter == 4 && (GV_bufferBTM[i] != ',') ){
-				DATA3[m] = GV_bufferBTM[i];
+			else if( CommaCounter == 4 && (tmp_buffer[i] != ',') ){
+				DATA3[m] = tmp_buffer[i];
 				m++;
 			}
 			/* Parse DATA4 bytes */
-			else if( CommaCounter == 5 && (GV_bufferBTM[i] != ',') ){
-				DATA4[n] = GV_bufferBTM[i];
+			else if( CommaCounter == 5 && (tmp_buffer[i] != ',') ){
+				DATA4[n] = tmp_buffer[i];
 				n++;
 			}
 		}
 
-		if( GV_bufferBTM[i] == '#')	//set flag to 1 when first ',' is detected
+		if( tmp_buffer[i] == '#')	//set flag to 1 when first ',' is detected
 			StartProcessingFlag = 1;
 	}
 
