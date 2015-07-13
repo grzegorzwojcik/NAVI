@@ -218,29 +218,29 @@ void CTRL_DataProcess(CTRLsource_t CTRL_source_device){
 			NAVI_Struct.NAVIGATOR_CH4 = 100 - atoi(DATA4);
 			break;
 		case 2:				// Data frame is related to the FAULT INJECTION AND REMOVAL
-			NAVI_Struct.FaultE = atoi(DATA1);
-			NAVI_Struct.FaultM = atoi(DATA2);
-			NAVI_Struct.FaultC = atoi(DATA3);
-			NAVI_Struct.FaultTime = atoi(DATA4);
+			NAVI_Struct.FaultE 		= atoi(DATA1);
+			NAVI_Struct.FaultM 		= atoi(DATA2);
+			NAVI_Struct.FaultC 		= atoi(DATA3);
+			NAVI_Struct.FaultTime 	= atoi(DATA4);
 			if(NAVI_Struct.FaultTime > 0){
 				GV_TimeCounter = NAVI_Struct.FaultTime/1000 + 30;
 				GV_TimeStart = 1;
 			}
 			break;
 		case 3:				// Data frame is related to the SENSOR BOARD Euler angles & Z angular velocity measurements
-			NAVI_Struct.Yaw = atoi(DATA1);
-			NAVI_Struct.Pitch = atoi(DATA2);
-			NAVI_Struct.Roll = atoi(DATA3);
-			NAVI_Struct.Gyro_Z = atoi(DATA4);
+			NAVI_Struct.Yaw 	= atoi(DATA1);
+			NAVI_Struct.Pitch 	= atoi(DATA2);
+			NAVI_Struct.Roll 	= atoi(DATA3);
+			NAVI_Struct.Gyro_Z 	= atoi(DATA4);
 			break;
 		case 4:				// Data frame is related to the SENSOR BOARD ADC voltage & sonar measurements
-			NAVI_Struct.Voltage = atoi(DATA1);
+			NAVI_Struct.Voltage 	= atoi(DATA1);
 			NAVI_Struct.IR_distance = atoi(DATA2);
 			break;
 		case 6:			// Data frame is related to the current DATA sent, via Bluetooth, by external device
-			NAVI_Struct.DateYYYY = atoi(DATA1);
-			NAVI_Struct.DateMM = atoi(DATA2);
-			NAVI_Struct.DateDD = atoi(DATA3);
+			NAVI_Struct.DateYYYY	= atoi(DATA1);
+			NAVI_Struct.DateMM 		= atoi(DATA2);
+			NAVI_Struct.DateDD 		= atoi(DATA3);
 			break;
 		case 7:			// Data frame is related to the current TIME sent, via Bluetooth, by external device
 			NAVI_Struct.TimeHH = atoi(DATA1);

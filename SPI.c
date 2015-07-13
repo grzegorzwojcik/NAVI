@@ -129,13 +129,15 @@ void SD_createLog(void){
 		static char path[40] = {0};
 		f_mount(0, &g_sFatFs);		//Mount drive 0 [SD card]
 		sprintf(path, "%s", mainFolder);
-		fresult = f_stat(path, &fileInfo);			// Checking directory
+		fresult = f_stat(path, &fileInfo);	// Checking directory
 
 		switch (fresult) {
-			case FR_NO_FILE:						// Create if main folder is not present
+			case FR_NO_FILE:				// Create if main folder is not present
+
 				f_mkdir(mainFolder);
 
-			case FR_OK:								// Proceed further if it is
+			case FR_OK:						// Proceed further if it is
+
 				/*	Create path for first subfolder (Name = YYYY)	*/
 				sprintf(path, "%s/%i", mainFolder, NAVI_Struct.DateYYYY);
 				fresult = f_stat(path, &fileInfo);	//Check whether it already exists
@@ -188,10 +190,16 @@ void SD_createLog(void){
 	else{
 		if(GV_TimeStart == SET){		//Save data to the SD CARD
 			if(GV_SDdetected == SET){
+				char log_message[90] = {0};
+				sprintf(log_message, "\r\n%i:%i:%i Fe=%i Fm=%i Fc=%i Y=%i P=%i R=%i Gz=%i V=%i",
+						NAVI_Struct.TimeHH, NAVI_Struct.TimeMM, NAVI_Struct.TimeSS,
+						NAVI_Struct.FaultE, NAVI_Struct.FaultM, NAVI_Struct.FaultC,
+						NAVI_Struct.Yaw, NAVI_Struct.Pitch, NAVI_Struct.Roll,
+						NAVI_Struct.Gyro_Z, NAVI_Struct.Voltage);
 				static DWORD offset = 0;
 				fresult = f_open(&plik, final_path, FA_WRITE);
 				fresult = f_lseek(&plik, offset);
-				fresult = f_write(&plik, "\r\n23:15:45, Y=34, P=50, Y=180, Alt=1500mm, \r\n23:15:45, Y=34, P=50, Y=180, Alt=1500mm,", 90, &zapisanych_bajtow);
+				fresult = f_write(&plik, log_message, 90, &zapisanych_bajtow);
 				offset += 90;
 				fresult = f_close (&plik);
 			}

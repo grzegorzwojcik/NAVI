@@ -60,7 +60,7 @@ void SYSTEM_ClockCheck(void){
 }
 
 /* Sending a string */
-void USART_puts(USART_TypeDef* USARTx, volatile char *s){
+void USART_puts(USART_TypeDef* USARTx, volatile unsigned char *s){
 	while(*s){
 		// wait until data register is empty
 		while( !(USARTx->SR & 0x00000040) );

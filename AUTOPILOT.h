@@ -33,7 +33,6 @@ void AP_initRCC(void);
 void AP_initGPIO(void);
 void AP_initUART(void);
 void AP_ClearBuffer(void);
-void USART_puts(USART_TypeDef* USARTx, volatile char *s);
 FlagStatus AP_checkCRC(char StartChar, uint8_t Length);
 
 #endif /* AUTOPILOT_H_ */

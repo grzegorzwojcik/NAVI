@@ -33,7 +33,6 @@ void BTM_initRCC(void);
 void BTM_initGPIO(void);
 void BTM_initUART(void);
 void BTM_ClearBuffer(void);
-void USART_puts(USART_TypeDef* USARTx, volatile char *s);
 FlagStatus BTM_checkCRC(char StartChar, uint8_t Length);
 
 #endif /* BTM_H_ */

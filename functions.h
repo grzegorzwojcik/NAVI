@@ -22,6 +22,7 @@ volatile uint16_t GV_TimeCounter;	// time counter, which is DECREMENTING within 
 /* Private functions ---------------------------------------------------------*/
 void PLL_Configurattion(void);
 void SYSTEM_ClockCheck(void);
+void USART_puts(USART_TypeDef* USARTx, volatile unsigned char *s);
 
 #endif /* FUNCTIONS_H_ */
 
