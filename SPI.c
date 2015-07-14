@@ -6,8 +6,8 @@
  */
 
 #include "SPI.h"
-#include "CONTROLLER.h"
-#include "functions.h"
+
+
 
 
 void SPI_initRCC(void){
@@ -124,15 +124,17 @@ void SD_createLog(void){
 
 	static char mainFolder[7] = "AI-METH";	//Main folder name [SD card]
 	static char final_path[40] = {0};
+	static DWORD offset = 33;				//Offset used during writing data do SD card
 
 	if(GV_SDfileCreated != SET){
 		static char path[40] = {0};
-		f_mount(0, &g_sFatFs);		//Mount drive 0 [SD card]
+		f_mount(0, &g_sFatFs);				//Mount drive 0 [SD card]
 		sprintf(path, "%s", mainFolder);
-		fresult = f_stat(path, &fileInfo);	// Checking directory
 
+		/* Checking directory & creating file */
+		fresult = f_stat(path, &fileInfo);
 		switch (fresult) {
-			case FR_NO_FILE:				// Create if main folder is not present
+			case FR_NO_FILE:				// Create main folder if it is not present
 
 				f_mkdir(mainFolder);
 
@@ -144,15 +146,16 @@ void SD_createLog(void){
 				if( fresult == FR_NO_FILE )
 					f_mkdir(path);
 
-				/*	Create path for second subfolder (Name = MM-DD)	*/
-				//We want format MM-DD not M-D, i.e. 06-26, instead of 6-26
+			/*		Create path for second subfolder (Name = MM-DD)				*/
+			/*		We want format MM-DD not M-D, i.e. 06-26, instead of 6-26	*/
 				if(NAVI_Struct.DateMM < 10){
 					if( NAVI_Struct.DateDD < 10 )
 						sprintf(path, "%s/0%i-0%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
 					else
 						sprintf(path, "%s/0%i-%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
 				}
-				/*	We want format MM-DD not M-D, i.e. 12-09 instead of 12-9	*/
+
+			/*		We want format MM-DD not M-D, i.e. 12-09 instead of 12-9	*/
 				else{
 					if( NAVI_Struct.DateDD < 10 )
 						sprintf(path, "%s/%i-0%i", path, NAVI_Struct.DateMM, NAVI_Struct.DateDD);
@@ -174,10 +177,15 @@ void SD_createLog(void){
 						fresult = f_open(&plik,path_tmp, FA_CREATE_ALWAYS | FA_WRITE);	//Create file and allow writing to it
 
 						if( fresult == FR_OK )
-							GV_SDfileCreated = SET;	// File succesfully created.
+							GV_SDfileCreated = SET;				// File succesfully created.
 
+						char initMessage[] = "HH:MM:SS Fe Fm Fc Y  P  R  Gz  V";		//First line in .txt file
+						fresult = f_open(&plik, path_tmp, FA_WRITE);
+						fresult = f_write(&plik, initMessage , 35, &zapisanych_bajtow);
 						fresult = f_close (&plik);
-						sprintf(final_path, "%s", path_tmp);
+						offset = sizeof(initMessage);
+
+						sprintf(final_path, "%s", path_tmp); 	// Save final directory to variable
 						break;
 					}
 				}
@@ -190,17 +198,19 @@ void SD_createLog(void){
 	else{
 		if(GV_TimeStart == SET){		//Save data to the SD CARD
 			if(GV_SDdetected == SET){
-				char log_message[90] = {0};
-				sprintf(log_message, "\r\n%i:%i:%i Fe=%i Fm=%i Fc=%i Y=%i P=%i R=%i Gz=%i V=%i",
+				/* Create data log in proper format */
+				char log_message[60] = {0};
+				sprintf(log_message, "\r\n%i:%i:%i %i %i %i %i %i %i %i %i",
 						NAVI_Struct.TimeHH, NAVI_Struct.TimeMM, NAVI_Struct.TimeSS,
 						NAVI_Struct.FaultE, NAVI_Struct.FaultM, NAVI_Struct.FaultC,
 						NAVI_Struct.Yaw, NAVI_Struct.Pitch, NAVI_Struct.Roll,
 						NAVI_Struct.Gyro_Z, NAVI_Struct.Voltage);
-				static DWORD offset = 0;
+
+				/* Measure log length & save it with proper offset to previous data */
 				fresult = f_open(&plik, final_path, FA_WRITE);
 				fresult = f_lseek(&plik, offset);
-				fresult = f_write(&plik, log_message, 90, &zapisanych_bajtow);
-				offset += 90;
+				fresult = f_write(&plik, log_message, sizeof(log_message), &zapisanych_bajtow);
+				offset += sizeof(log_message);
 				fresult = f_close (&plik);
 			}
 		}

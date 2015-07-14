@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include "stm32f10x.h"
 
+#include "CONTROLLER.h"
+#include "functions.h"
 #include "diskio.h"
 #include "ff.h"
 #include "integer.h"
