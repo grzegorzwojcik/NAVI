@@ -123,6 +123,13 @@ void TIM2_IRQHandler(void){
 			FAULTS_removalSERVO();
 			//TIM2->CCR3 = 20;
 
+		if(NAVI_Struct.FaultE == 1){
+			FAULTS_injectESC();
+		}
+
+		if(NAVI_Struct.FaultE == 0)
+			FAULTS_removalESC();
+
 		CTRL_controlAUTOPILOT(0, 100, 110, 190);
 	}
 }

@@ -14,7 +14,7 @@
 
 
 void FAULTS_initRCC(void){
-	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);	// Servomechanism
+	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);	// Servomechanism
 	  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);							// Servomechanism
 }
 
@@ -50,12 +50,51 @@ void FAULTS_Servo_initTIM(void){
 	TIM_Cmd(TIM2, ENABLE);
 }
 
+void FAULTS_ESC_initGPIO(void){
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Pin = ESC_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(ESC_GPIO_PORT, &GPIO_InitStructure);
+
+	GPIO_ResetBits(ESC_GPIO_PORT, ESC_PIN);
+}
+
+/*
+* @brief Function Name  : FAULTS_injectESC function
+* @brief Description    : This function injects electrical fault,
+* 							which is TURNING OFF one of the ESC regulators.
+*/
+void FAULTS_injectESC(void){
+	GPIO_SetBits(ESC_GPIO_PORT, ESC_PIN);
+}
 
 
+/*
+* @brief Function Name  : FAULTS_injectSERVO function
+* @brief Description    : This function injects mechanical fault,
+* 							which is moving SERVOMECHANISMS to upper position
+* 							so it WILL DAMAGE one of the PROPELLERS.
+*/
 void FAULTS_injectSERVO(void){
 	TIM2->CCR3 = 60;
 }
 
+
+/*
+* @brief Function Name  : FAULTS_removalESC function
+* @brief Description    : This function removes electrical fault,
+* 							(TURN ON the ESC regulator again).
+*/
+void FAULTS_removalESC(void){
+	GPIO_ResetBits(ESC_GPIO_PORT, ESC_PIN);
+}
+
+/*
+* @brief Function Name  : FAULTS_removalSERVO function
+* @brief Description    : This function does NOT remove mechanical fault,
+* 							it only moves the servomechanism to lower (initial) position.
+*/
 void FAULTS_removalSERVO(void){
 	TIM2->CCR3 = 250;
 }

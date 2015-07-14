@@ -61,6 +61,7 @@ int main(void)
 		FAULTS_initRCC();
 		FAULTS_Servo_initGPIO();
 		FAULTS_Servo_initTIM();		// 50 Hz PWM (together with control loop below
+		FAULTS_ESC_initGPIO();
 
 		SPI_initRCC();
 		SPI_initGPIO();
