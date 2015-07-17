@@ -66,7 +66,7 @@ void FAULTS_ESC_initGPIO(void){
 * 							which is TURNING OFF one of the ESC regulators.
 */
 void FAULTS_injectESC(void){
-	GPIO_SetBits(ESC_GPIO_PORT, ESC_PIN);
+	GPIO_ResetBits(ESC_GPIO_PORT, ESC_PIN);
 }
 
 
@@ -87,7 +87,7 @@ void FAULTS_injectSERVO(void){
 * 							(TURN ON the ESC regulator again).
 */
 void FAULTS_removalESC(void){
-	GPIO_ResetBits(ESC_GPIO_PORT, ESC_PIN);
+	GPIO_SetBits(ESC_GPIO_PORT, ESC_PIN);
 }
 
 /*
